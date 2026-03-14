@@ -1,0 +1,699 @@
+﻿Clearing database...
+Seeding Users...
+Seeding Cinemas and Halls...
+Seeding Seats...
+node.exe : PrismaClientVa
+lidationError: 
+At C:\Program 
+Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (PrismaClientValidat   
+ ionError: :String) [    
+], RemoteException
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+Invalid `prisma.seat.crea
+teMany()` invocation in
+G:\iti\aip\cinema\prisma\
+seed.ts:123:23
+
+  120     });
+  121   }
+  122 }
+ΓåÆ 123 await 
+prisma.seat.createMany({
+        data: [
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 1,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 2,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 3,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 4,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 5,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 6,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 7,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 8,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 9,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 10,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 11,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 12,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 13,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 14,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 15,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "A",
+            column: 16,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 1,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 2,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 3,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 4,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 5,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 6,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 7,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 8,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 9,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 10,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 11,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 12,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 13,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 14,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 15,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "B",
+            column: 16,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 1,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 2,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 3,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 4,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 5,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 6,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 7,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 8,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 9,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 10,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 11,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 12,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 13,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 14,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 15,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "C",
+            column: 16,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 1,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 2,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 3,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 4,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 5,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 6,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 7,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 8,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 9,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 10,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 11,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 12,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 13,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 14,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 15,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "D",
+            column: 16,
+            type: "VIP"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 1,
+            type: 
+"WHEELCHAIR"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 2,
+            type: 
+"WHEELCHAIR"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 3,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 4,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 5,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 6,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 7,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 8,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 9,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 10,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 11,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 12,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 13,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 14,
+            type: 
+"STANDARD"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 15,
+            type: 
+"WHEELCHAIR"
+          },
+          {
+            hallId: "69b4
+b03af6be9d388d4db8e0",
+            row: "E",
+            column: 16,
+            type: 
+"WHEELCHAIR"
+          }
+        ],
+        skipDuplicates: 
+true
+        ~~~~~~~~~~~~~~
+      })
+
+Unknown argument 
+`skipDuplicates`. 
+Available options are 
+marked with ?.
+    at 
+throwValidationException 
+(G:\iti\aip\cinema\node_m
+odules\@prisma\client\src
+\runtime\core\errorRender
+ing\throwValidationExcept
+ion.ts:45:9)
+    at 
+ei.handleRequestError (G:
+\iti\aip\cinema\node_modu
+les\@prisma\client\src\ru
+ntime\RequestHandler.ts:2
+02:7)
+    at ei.handleAndLogReq
+uestError (G:\iti\aip\cin
+ema\node_modules\@prisma\
+client\src\runtime\Reques
+tHandler.ts:174:12)
+    at ei.request (G:\iti
+\aip\cinema\node_modules\
+@prisma\client\src\runtim
+e\RequestHandler.ts:143:1
+2)
+    at async a (G:\iti\ai
+p\cinema\node_modules\@pr
+isma\client\src\runtime\g
+etPrismaClient.ts:833:24)
+    at async main (G:\iti
+\aip\cinema\prisma\seed.t
+s:123:5) {
+  clientVersion: '6.19.2'
+}

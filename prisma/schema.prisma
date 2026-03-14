@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Cinema {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  nameEn   String
+  nameAr   String
+  location String
+  contact  String?
+  halls    Hall[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Hall {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  cinemaId  String     @db.ObjectId
+  nameEn    String
+  nameAr    String
+  type      HallType   @default(STANDARD)
+  capacity  Int
+  cinema    Cinema     @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+  seats     Seat[]
+  showtimes Showtime[]
+}
+
+enum HallType {
+  STANDARD
+  IMAX
+  VIP
+}
+
+model Seat {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  hallId  String   @db.ObjectId
+  row     String
+  column  Int
+  type    SeatType @default(STANDARD)
+  hall    Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@unique([hallId, row, column])
+}
+
+enum SeatType {
+  STANDARD
+  VIP
+  WHEELCHAIR
+}
+
+model Movie {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  titleEn       String
+  titleAr       String
+  descriptionEn String
+  descriptionAr String
+  durationMin   Int
+  genre         String
+  posterUrl     String
+  trailerUrl    String?
+  releaseDate   DateTime
+  rating        String
+  showtimes     Showtime[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Showtime {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  movieId   String    @db.ObjectId
+  hallId    String    @db.ObjectId
+  startTime DateTime
+  basePrice Float
+  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  hall      Hall      @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+  tickets   Ticket[]
+}
+
+model Booking {
+  id          String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String              @db.ObjectId
+  showtimeId  String              @db.ObjectId
+  status      BookingStatus       @default(DRAFT)
+  totalAmount Float
+  user        User                @relation(fields: [userId], references: [id])
+  showtime    Showtime            @relation(fields: [showtimeId], references: [id])
+  tickets     Ticket[]
+  concessions BookingConcession[]
+  payment     Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BookingStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+model Ticket {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId  String @db.ObjectId
+  showtimeId String @db.ObjectId
+  seatId     String @db.ObjectId
+  price      Float
+
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  showtime Showtime @relation(fields: [showtimeId], references: [id])
+  seat     Seat     @relation(fields: [seatId], references: [id])
+
+  @@unique([showtimeId, seatId])
+}
+
+model ConcessionItem {
+  id            String              @id @default(auto()) @map("_id") @db.ObjectId
+  nameEn        String
+  nameAr        String
+  descriptionEn String
+  descriptionAr String
+  price         Float
+  imageUrl      String?
+  category      ConcessionCategory
+  bookings      BookingConcession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ConcessionCategory {
+  SNACK
+  DRINK
+  COMBO
+}
+
+model BookingConcession {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId        String         @db.ObjectId
+  concessionItemId String         @db.ObjectId
+  quantity         Int
+  subtotal         Float
+  booking          Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  concessionItem   ConcessionItem @relation(fields: [concessionItemId], references: [id])
+}
+
+model Payment {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId       String        @unique @db.ObjectId
+  stripeSessionId String?       @unique
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}

@@ -1,0 +1,99 @@
+{
+  "Home": {
+    "title": "Your Night at \n {brand} \n Starts Here",
+    "subtitle": "Discover films, choose your perfect seats, grab snacks — all in one seamless, cinematic experience. Welcome to Lumière.",
+    "badge": "Premium Cinema Experience",
+    "cta": {
+      "browse": "Browse Movies",
+      "find": "Find a Cinema",
+      "join": "Join Lumière"
+    },
+    "stats": {
+      "cinemas": "Cinemas",
+      "movies": "Movies",
+      "viewers": "Happy Viewers"
+    },
+    "features": {
+      "title": "Everything You Need",
+      "subtitle": "From discovering films to enjoying your snacks — we've thought of every detail.",
+      "items": {
+        "booking": {
+          "title": "Instant Booking",
+          "desc": "Reserve your seats in seconds with real-time availability."
+        },
+        "concessions": {
+          "title": "Concessions",
+          "desc": "Order snacks and drinks ahead — skip the counter queue."
+        },
+        "smart": {
+          "title": "Smart Picks",
+          "desc": "AI-powered recommendations tailored to your mood."
+        },
+        "venues": {
+          "title": "Multiple Venues",
+          "desc": "Find the nearest cinema or explore new locations."
+        }
+      }
+    },
+    "banner": {
+      "title": "Ready for Showtime?",
+      "subtitle": "Create your free account and start booking your next cinematic adventure in minutes."
+    }
+  },
+  "Movies": {
+    "title": "Now Showing",
+    "subtitle": "Discover the latest blockbuster releases and indie gems at Lumière.",
+    "search": "Search movies...",
+    "filter_all": "All Genres",
+    "duration": "{mins} min",
+    "release": "Released",
+    "book": "Book Tickets",
+    "no_results": "No movies found."
+  },
+  "Navigation": {
+    "cinemas": "Cinemas",
+    "movies": "Movies",
+    "recommend": "Recommend",
+    "signin": "Sign In",
+    "register": "Get Started",
+    "profile": "Profile",
+    "bookings": "My Bookings",
+    "admin": "Admin Panel",
+    "signout": "Sign Out"
+  },
+  "Footer": {
+    "brand_desc": "Your premium cinema booking experience. Discover movies, reserve the perfect seats, and enjoy a world-class theater visit from start to finish.",
+    "explore": "Explore",
+    "account": "Account",
+    "rights": "Lumière Cinema. All rights reserved.",
+    "crafted": "Crafted with passion for film lovers."
+  },
+  "Auth": {
+    "login_title": "Welcome Back",
+    "login_subtitle": "Sign in to access your bookings and personalized recommendations.",
+    "register_title": "Join Lumière",
+    "register_subtitle": "Create an account to unlock the ultimate cinematic journey.",
+    "name": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "login_btn": "Sign In",
+    "register_btn": "Create Account",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "register_link": "Sign up",
+    "login_link": "Log in",
+    "invalid_credentials": "The email or password you entered is incorrect.",
+    "login_success": "Successfully signed in!",
+    "register_success": "Account created successfully! Welcome to Lumière.",
+    "generic_error": "An error occurred. Please try again."
+  },
+  "Exceptions": {
+    "error_title": "Something Went Wrong",
+    "error_desc": "We ran into an unexpected issue. Don't worry — your booking data is safe. Try refreshing or come back in a moment.",
+    "error_id": "Error ID: {id}",
+    "try_again": "Try Again",
+    "404_title": "Scene Not Found",
+    "404_desc": "This page seems to have left the theater. It may have been moved, deleted, or perhaps it never existed in our catalog.",
+    "back_home": "Back Home"
+  }
+}

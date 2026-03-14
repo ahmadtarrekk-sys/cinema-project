@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lumière Cinema — Premium Booking Platform
 
-## Getting Started
+A full-featured cinema booking web application built with **Next.js 16**, **TypeScript**, **Prisma + PostgreSQL**, **Auth.js**, **Tailwind CSS + shadcn/ui**, **Framer Motion**, and **Socket.IO**.
 
-First, run the development server:
+## Features
+
+- 🎬 **Movie & Cinema catalog** with search, filters, and cinematic design
+- 🪑 **Interactive seat selection** with real-time sync via Socket.IO
+- 🍿 **Concessions ordering** — snacks, drinks, combos with size/flavor options
+- 💳 **Payment flow** — Stripe test mode or built-in mock payment
+- 🤖 **Smart chatbot** — mood-based movie recommendations (local engine + optional OpenAI)
+- 🔐 **Auth** — login, register, forgot/reset password with Auth.js Credentials
+- 📱 **Responsive** premium dark theme with cinematic animations
+- 🛡️ **Admin panel** — CRUD management for cinemas, movies, showtimes, concessions
+
+## Tech Stack
+
+| Layer          | Technology                          |
+| -------------- | ----------------------------------- |
+| Framework      | Next.js 16 (App Router)             |
+| Language       | TypeScript                          |
+| Database       | PostgreSQL + Prisma ORM             |
+| Auth           | Auth.js (Credentials)               |
+| Styling        | Tailwind CSS + shadcn/ui            |
+| Animations     | Framer Motion                       |
+| Real-time      | Socket.IO                           |
+| State          | Zustand (client)                    |
+| Validation     | Zod                                 |
+| Payments       | Stripe (optional) / Mock fallback   |
+| AI             | Local rules engine / OpenAI (optional) |
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+- npm
+
+### 1. Clone & install
+
+```bash
+cd cinema
+npm install
+```
+
+### 2. Environment setup
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your database credentials:
+
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/cinema_db"
+NEXTAUTH_SECRET="any-random-string"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+### 3. Database setup
+
+```bash
+npx prisma migrate dev --name init
+npx prisma db seed
+```
+
+### 4. Run dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Login
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Email              | Password  | Role  |
+| ------------------ | --------- | ----- |
+| demo@lumiere.com   | demo1234  | User  |
+| admin@lumiere.com  | admin1234 | Admin |
 
-## Learn More
+## Optional Features
 
-To learn more about Next.js, take a look at the following resources:
+### Stripe Payments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Add your Stripe test keys to `.env`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+STRIPE_SECRET_KEY="sk_test_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+```
 
-## Deploy on Vercel
+Without keys, the app uses a built-in mock payment flow that marks bookings as paid.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### OpenAI Chatbot
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add your OpenAI key to `.env`:
+
+```
+OPENAI_API_KEY="sk-..."
+```
+
+Without the key, the chatbot uses a local rules-based recommendation engine.
+
+## Project Structure
+
+```
+cinema/
+├── prisma/              # Schema, migrations, seed
+├── src/
+│   ├── app/             # Next.js App Router pages
+│   ├── components/      # UI components
+│   │   ├── layout/      # Navbar, Footer
+│   │   └── ui/          # shadcn/ui + custom components
+│   └── lib/             # Utilities, constants, DB client
+├── .env.example
+├── next.config.ts
+└── package.json
+```
+
+## License
+
+MIT
