@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Clapperboard,
+  QrCode,
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -113,21 +114,37 @@ export function Navbar() {
                 align="end"
                 className="w-48 glass-strong border-white/10"
               >
-                <DropdownMenuItem className="gap-2">
-                  <User className="h-4 w-4" />
-                  {t("profile")}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2">
-                  <Ticket className="h-4 w-4" />
-                  {t("bookings")}
-                </DropdownMenuItem>
-                {user.role === "ADMIN" && (
+                <Link href="/profile">
+                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                    <User className="h-4 w-4" />
+                    {t("profile")}
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/profile">
+                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                    <Ticket className="h-4 w-4" />
+                    {t("bookings")}
+                  </DropdownMenuItem>
+                </Link>
+                {(user.role === "ADMIN" || user.role === "STAFF") && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="gap-2">
-                      <LayoutDashboard className="h-4 w-4" />
-                      {t("admin")}
-                    </DropdownMenuItem>
+                    <Link href="/scanner">
+                      <DropdownMenuItem className="gap-2 cursor-pointer text-gold hover:text-gold-light focus:text-gold-light">
+                        <QrCode className="h-4 w-4" />
+                        Scanner
+                      </DropdownMenuItem>
+                    </Link>
+                  </>
+                )}
+                {user.role === "ADMIN" && (
+                  <>
+                    <Link href="/admin">
+                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                        <LayoutDashboard className="h-4 w-4" />
+                        {t("admin")}
+                      </DropdownMenuItem>
+                    </Link>
                   </>
                 )}
                 <DropdownMenuSeparator />
@@ -192,10 +209,38 @@ export function Navbar() {
                   })}
                 </div>
                 {user ? (
-                  <div className="border-t border-white/5 p-4">
+                  <div className="border-t border-white/5 p-4 flex flex-col gap-1">
+                    <Link href="/profile" onClick={() => setMobileOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start gap-3 text-sm text-muted-foreground hover:text-foreground">
+                        <User className="h-4 w-4" />
+                        {t("profile")}
+                      </Button>
+                    </Link>
+                    <Link href="/profile" onClick={() => setMobileOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start gap-3 text-sm text-muted-foreground hover:text-foreground">
+                        <Ticket className="h-4 w-4" />
+                        {t("bookings")}
+                      </Button>
+                    </Link>
+                    {(user.role === "ADMIN" || user.role === "STAFF") && (
+                      <Link href="/scanner" onClick={() => setMobileOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start gap-3 text-sm text-gold hover:text-gold-light hover:bg-gold/10">
+                          <QrCode className="h-4 w-4" />
+                          Scanner
+                        </Button>
+                      </Link>
+                    )}
+                    {user.role === "ADMIN" && (
+                      <Link href="/admin" onClick={() => setMobileOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start gap-3 text-sm text-muted-foreground hover:text-foreground">
+                          <LayoutDashboard className="h-4 w-4" />
+                          {t("admin")}
+                        </Button>
+                      </Link>
+                    )}
                     <Button 
                       variant="ghost" 
-                      className="w-full text-sm text-destructive justify-start gap-3 hover:text-destructive hover:bg-destructive/10"
+                      className="w-full text-sm text-destructive justify-start gap-3 hover:text-destructive hover:bg-destructive/10 mt-2"
                       onClick={() => {
                         setMobileOpen(false);
                         signOut({ callbackUrl: "/" });

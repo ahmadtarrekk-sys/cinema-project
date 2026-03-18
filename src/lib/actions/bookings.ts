@@ -38,19 +38,35 @@ export async function createBookingDraft(data: {
     
     // 3. Create the booking and its tickets in a transaction
     const booking = await prisma.$transaction(async (tx) => {
+      // Create helper to get seat tier
+      const FIRST_PREMIUM_ROWS = 3;
+      const hallRows = Array.from(new Set(showtime.hall.seats.map(s => s.row))).sort();
+      
       const b = await tx.booking.create({
         data: {
           userId: session.user.id,
           showtimeId: data.showtimeId,
-          totalAmount: data.totalAmount, // Usually, we should re-calculate this fully server side
+          totalAmount: data.totalAmount, // Assuming the client sends the correct total including fees for now. Re-calculating tickets below.
           status: "DRAFT",
           tickets: {
             create: seatsToBook.map(seat => {
-              const multiplier = seat.type === "VIP" ? 1.5 : 1.0;
+              // Calculate tier
+              let tier = "Normal";
+              if (seat.type === "VIP") {
+                tier = "VIP";
+              } else if (seat.type === "PREMIUM") {
+                tier = "Premium";
+              }
+
+              // Calculate price based on tier (hardcoded as requested)
+              let price = 180;
+              if (tier === "VIP") price = 350;
+              if (tier === "Premium") price = 250;
+
               return {
                 showtimeId: data.showtimeId,
                 seatId: seat.id,
-                price: showtime.basePrice * multiplier
+                price: price
               };
             })
           }

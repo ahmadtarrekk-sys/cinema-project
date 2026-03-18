@@ -1,0 +1,46 @@
+﻿
+> cinema@0.1.0 lint
+> eslint
+
+
+F:\cinema\src\app\[locale]\(protected)\admin\page.tsx
+  29:52  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+F:\cinema\src\app\[locale]\(protected)\book\[showtimeId]\payment\[bookingId]\success\page.tsx
+  98:20  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\cinema\src\app\[locale]\(protected)\profile\page.tsx
+  80:24  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react/no-unescaped-entities
+  95:86  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+F:\cinema\src\app\[locale]\(protected)\profile\page.tsx:95:86
+  93 |               const isPast = new Date(showtime.startTime) < new Date();
+  94 |               // Can cancel up to 2 hours before showtime
+> 95 |               const canCancel = !isPast && (new Date(showtime.startTime).getTime() - Date.now() > 2 * 60 * 60 * 1000);
+     |                                                                                      ^^^^^^^^^^ Cannot call impure function
+  96 |
+  97 |               return (
+  98 |                 <div key={booking.id} className="rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6 flex flex-col sm:flex-row gap-6">  react-hooks/purity
+
+F:\cinema\src\app\[locale]\(public)\chat\page.tsx
+  16:11  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+F:\cinema\src\app\[locale]\(public)\showtimes\page.tsx
+  154:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\cinema\src\app\[locale]\movies\page.tsx
+  35:4  error  Parsing error: JSX expressions must have one parent element
+
+F:\cinema\src\app\[locale]\u0028public\u0029\chat\page.tsx
+  16:11  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+F:\cinema\src\components\booking\payment-client.tsx
+  182:141  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+F:\cinema\src\components\chat\floating-chat.tsx
+  144:31  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+Γ£û 10 problems (7 errors, 3 warnings)
+

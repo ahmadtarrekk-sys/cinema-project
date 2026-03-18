@@ -1,0 +1,7 @@
+src/components/auth/login-form.tsx(22,8): error TS2307: Cannot find module '@/components/ui/form' or its corresponding type declarations.
+src/components/auth/login-form.tsx(72,22): error TS7031: Binding element 'field' implicitly has an 'any' type.
+src/components/auth/login-form.tsx(89,22): error TS7031: Binding element 'field' implicitly has an 'any' type.
+src/components/auth/register-form.tsx(22,8): error TS2307: Cannot find module '@/components/ui/form' or its corresponding type declarations.
+src/components/auth/register-form.tsx(84,22): error TS7031: Binding element 'field' implicitly has an 'any' type.
+src/components/auth/register-form.tsx(101,22): error TS7031: Binding element 'field' implicitly has an 'any' type.
+src/components/auth/register-form.tsx(118,22): error TS7031: Binding element 'field' implicitly has an 'any' type.

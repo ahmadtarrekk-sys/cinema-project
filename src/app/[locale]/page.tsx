@@ -60,7 +60,10 @@ export default function HomePage() {
   return (
     <div className="relative">
       {/* ── Hero ───────────────────────────────────────────── */}
-      <section className="relative flex min-h-[100vh] items-center overflow-hidden">
+      <section className="relative flex min-h-[100vh] items-center overflow-hidden bg-hero">
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+        
         {/* Spotlight background */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.82_0.12_75/8%),transparent)]" />
@@ -95,14 +98,13 @@ export default function HomePage() {
             </motion.div>
 
             {/* Heading */}
-            <motion.h1
-              variants={fadeUp}
-              className="max-w-4xl font-display text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl whitespace-pre-line"
-            >
-              {t.rich("title", {
-                brand: (chunks) => <span className="text-gradient-gold">{chunks}</span>
-              })}
-            </motion.h1>
+            <motion.div variants={fadeUp}>
+              <h1 className="max-w-4xl font-display text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl whitespace-pre-line">
+                {t.rich("title", {
+                  brand: (chunks) => <span className="text-gradient-gold">{chunks}</span>
+                })}
+              </h1>
+            </motion.div>
 
             {/* Subtitle */}
             <motion.p
@@ -164,8 +166,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ──────────────────────────────────────── */}
-      <section className="relative border-t border-white/5 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative border-t border-white/5 py-24 bg-chat bg-blend-overlay bg-background/80">
+        <div className="absolute inset-0 bg-background/50" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -212,7 +215,8 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA Banner ────────────────────────────────────── */}
-      <section className="relative border-t border-white/5 py-24">
+      <section className="relative border-t border-white/5 py-24 bg-auth bg-blend-overlay bg-background/80">
+        <div className="absolute inset-0 bg-background/60" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,oklch(0.82_0.12_75/5%),transparent)]" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

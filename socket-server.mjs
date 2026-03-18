@@ -62,6 +62,14 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("seatsBooked", ({ showtimeId, seatIds }) => {
+    const showtimeHolds = heldSeats.get(showtimeId);
+    if (showtimeHolds) {
+      seatIds.forEach((seatId) => showtimeHolds.delete(seatId));
+    }
+    io.to(showtimeId).emit("seatsBooked", { seatIds });
+  });
+
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
     // Ideally, we'd track which seats this socket held and release them,

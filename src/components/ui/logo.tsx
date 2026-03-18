@@ -17,7 +17,7 @@ export function Logo() {
       </motion.div>
       <div className="flex flex-col">
         <span className="font-display text-lg font-semibold tracking-wide text-gradient-gold">
-          LUMIÈRE
+          AURORA
         </span>
         <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Cinema

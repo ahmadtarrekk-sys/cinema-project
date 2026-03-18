@@ -7,7 +7,7 @@ export default async function LoginPage() {
   const t = await getTranslations("Auth");
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-auth">
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,oklch(0.82_0.12_75/5%),transparent)]" />
       

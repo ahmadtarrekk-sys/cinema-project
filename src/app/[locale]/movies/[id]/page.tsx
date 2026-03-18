@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Clock, Calendar, Star, Film, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, Calendar, Star, Film } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getTranslations } from "next-intl/server";
+import { ShowtimeSelector } from "./showtime-selector";
 
 interface MoviePageProps {
   params: Promise<{ id: string; locale: string }>;
@@ -36,18 +36,6 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
   const releaseYear = movie.releaseDate
     ? new Date(movie.releaseDate).getFullYear()
     : null;
-
-  // Group showtimes by Cinema for display
-  const cinemasWithShowtimes = Array.from(
-    new Set(movie.showtimes.map((st) => st.hall.cinema.id))
-  ).map((cinemaId) => {
-    const cinema = movie.showtimes.find((st) => st.hall.cinema.id === cinemaId)!
-      .hall.cinema;
-    const showtimes = movie.showtimes.filter(
-      (st) => st.hall.cinema.id === cinemaId
-    );
-    return { cinema, showtimes };
-  });
 
   return (
     <div className="min-h-screen pb-24">
@@ -126,61 +114,7 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
           <h2 className="font-display text-3xl font-bold text-white">
             Available Showtimes
           </h2>
-          <div className="mt-8 space-y-8">
-            {cinemasWithShowtimes.length > 0 ? (
-              cinemasWithShowtimes.map(({ cinema, showtimes }) => (
-                <div
-                  key={cinema.id}
-                  className="rounded-2xl border border-white/5 bg-cinema-surface p-6 sm:p-8"
-                >
-                  <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10 text-gold">
-                      <MapPin className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">
-                        {isArabic ? cinema.nameAr : cinema.nameEn}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {cinema.location}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                    {showtimes.map((st) => (
-                      <Link key={st.id} href={`/book/${st.id}`} className="block">
-                        <Button
-                          variant="outline"
-                          className="h-14 w-full flex-col gap-0.5 border-white/10 hover:border-gold hover:bg-gold/10"
-                        >
-                          <span className="text-base font-semibold text-white">
-                            {new Intl.DateTimeFormat("en", {
-                              hour: "numeric",
-                              minute: "2-digit",
-                            }).format(st.startTime)}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            {isArabic ? st.hall.nameAr : st.hall.nameEn}
-                          </span>
-                        </Button>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-cinema-surface py-24 text-center">
-                <Film className="h-12 w-12 text-white/20" />
-                <h3 className="mt-4 text-lg font-medium text-white">
-                  No showtimes currently available
-                </h3>
-                <p className="mt-2 text-muted-foreground">
-                  Check back later for updated schedules.
-                </p>
-              </div>
-            )}
-          </div>
+          <ShowtimeSelector showtimes={movie.showtimes} isArabic={isArabic} />
         </div>
       </div>
     </div>

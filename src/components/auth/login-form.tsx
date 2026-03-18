@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { signIn } from "next-auth/react"
-import { useRouter } from "@/i18n/routing"
+import { useRouter, Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
@@ -101,6 +101,12 @@ export function LoginForm() {
             </FormItem>
           )}
         />
+        
+        <div className="flex justify-end">
+          <Link href="/forgot-password" className="text-sm font-medium text-gold hover:text-gold-light transition-colors">
+            Forgot password?
+          </Link>
+        </div>
 
         {error && (
           <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">

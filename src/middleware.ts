@@ -1,14 +1,16 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
-import { auth } from "@/lib/auth";
+import { NextResponse, NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const intlMiddleware = createMiddleware(routing);
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
   const { pathname } = req.nextUrl;
 
-  // Protect paths: /profile, /bookings, /admin, /book (regardless of locale)
-  const isProtectedPath = ["/profile", "/bookings", "/admin", "/book"].some(
+  const isProtectedPath = ["/profile", "/bookings", "/admin", "/book", "/scanner"].some(
     (path) =>
       pathname === path ||
       pathname.startsWith(`${path}/`) ||
@@ -19,18 +21,20 @@ export default auth((req) => {
       )
   );
 
-  if (isProtectedPath && !req.auth) {
-    // If not authenticated, redirect to login with the correct locale
+  if (isProtectedPath && !token) {
     const localeMatch = pathname.match(/^\/([a-z]{2})/);
     const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
     const loginUrl = new URL(`/${locale}/login`, req.url);
-    return Response.redirect(loginUrl);
+    return NextResponse.redirect(loginUrl);
   }
 
   return intlMiddleware(req);
-});
+}
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ["/", "/(ar|en)/:path*"],
+  matcher: [
+    "/",
+    "/(ar|en)/:path*",
+    "/((?!api|_next|_vercel|.*\\..*).*)"
+  ],
 };

@@ -5,6 +5,7 @@ import { format as formatDt } from "date-fns";
 import Image from "next/image";
 import { Calendar, Clock, MapPin, Ticket as TicketIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
 
 interface BookingSummaryPageProps {
   params: { showtimeId: string; bookingId: string; locale: string };
@@ -30,6 +31,22 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-display font-medium text-white">Review Your Booking</h1>
         <p className="mt-2 text-muted-foreground">Almost there! Review your tickets below.</p>
+      </div>
+
+      <div className="mb-8 relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+        <Image 
+          src="/images/booking-bg.png" 
+          alt="Cinematic theater view" 
+          fill 
+          className="object-cover opacity-80"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <div className="absolute bottom-4 left-6 sm:bottom-6 sm:left-8">
+          <div className="inline-flex items-center rounded-full bg-gold/20 px-3 py-1 text-sm font-medium text-gold backdrop-blur-md border border-gold/30">
+            Booking Step 3 of 4
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/10 bg-cinema-surface/50 overflow-hidden backdrop-blur-xl">
@@ -86,7 +103,7 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
                   </div>
                 </div>
                 <div className="font-medium text-white">
-                  ${ticket.price.toFixed(2)}
+                  EGP {ticket.price.toFixed(2)}
                 </div>
               </div>
             ))}
@@ -97,15 +114,17 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
         <div className="p-6 sm:p-8 bg-black/20 flex flex-col sm:flex-row justify-between items-center gap-6">
           <div>
             <div className="text-sm text-muted-foreground mb-1">Total Amount</div>
-            <div className="text-3xl font-bold text-gold">${booking.totalAmount.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-gold">EGP {booking.totalAmount.toFixed(2)}</div>
           </div>
-          <div className="w-full sm:w-auto flex gap-4">
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4">
             <Button variant="outline" className="w-full sm:w-auto border-white/10">
               Cancel
             </Button>
-            <Button className="w-full sm:w-auto bg-gold text-black hover:bg-gold-light font-semibold">
-              Proceed to Concessions
-            </Button>
+            <Link href={`/book/${showtime.id}/summary/${booking.id}/concessions`} className="w-full sm:w-auto">
+              <Button className="w-full bg-gold text-black hover:bg-gold-light font-semibold">
+                Proceed to Concessions
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

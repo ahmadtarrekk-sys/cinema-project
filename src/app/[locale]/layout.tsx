@@ -9,15 +9,16 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Providers } from "@/components/providers";
 import { SessionProvider } from "@/components/auth/session-provider";
+import { FloatingChat } from "@/components/chat/floating-chat";
 import "../globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumière Cinema — Premium Movie Booking",
-    template: "%s | Lumière Cinema",
+    default: "Aurora Cinema — Premium Movie Booking",
+    template: "%s | Aurora Cinema",
   },
   description:
-    "Discover movies, reserve the perfect seats, and enjoy a world-class cinema experience. Lumière — your premium movie booking platform.",
+    "Discover movies, reserve the perfect seats, and enjoy a world-class cinema experience. Aurora — your premium movie booking platform.",
   keywords: ["cinema", "movies", "booking", "tickets", "showtimes"],
 };
 
@@ -58,6 +59,7 @@ export default async function RootLayout({
                 <Navbar />
                 <main className="flex-1">{children}</main>
                 <Footer />
+                <FloatingChat />
               </div>
             </Providers>
           </SessionProvider>
