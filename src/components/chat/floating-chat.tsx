@@ -144,7 +144,10 @@ export function FloatingChat() {
                         <Link key={m.id} href={`/movies/${m.id}`}>
                           <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg p-2 hover:bg-white/10 transition cursor-pointer">
                             {m.posterUrl ? (
-                              <img src={m.posterUrl} alt={m.titleEn} className="w-10 h-14 object-cover rounded" />
+                              <>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={m.posterUrl} alt={m.titleEn} className="w-10 h-14 object-cover rounded" />
+                              </>
                             ) : (
                               <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center"><Film className="w-4 h-4 text-white/50" /></div>
                             )}

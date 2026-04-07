@@ -229,3 +229,14 @@ enum PaymentStatus {
   FAILED
   REFUNDED
 }
+
+model SeatHold {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  showtimeId String   @db.ObjectId
+  seatId     String   @db.ObjectId
+  userId     String   @db.ObjectId
+  expiresAt  DateTime
+
+  @@unique([showtimeId, seatId])
+  @@index([expiresAt])
+}

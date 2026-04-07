@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createBookingDraft } from "@/lib/actions/bookings";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/routing";
-import { getSocket } from "@/lib/socket";
+import { getSocket, initSocket } from "@/lib/socket";
 import { useSession } from "next-auth/react";
 
 // A minimal representation of the types we need
@@ -37,40 +37,73 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
 
   // Real-time synchronization
   useEffect(() => {
-    const socket = getSocket();
-    socket.emit("joinShowtime", showtime.id);
+    if (userId === "guest") return; // Require authentication
 
-    socket.on("initialHolds", (holds: { seatId: string; userId: string }[]) => {
-      // Exclude seats held by current user from the 'held by others' list
-      const othersHolds = holds
-        .filter((h) => h.userId !== userId)
-        .map((h) => h.seatId);
-      setHeldSeatIds(othersHolds);
-    });
+    let currentSocket: ReturnType<typeof getSocket> | null = null;
 
-    socket.on("seatHeld", ({ seatId, userId: holderId }: { seatId: string; userId: string }) => {
-      if (holderId !== userId) {
-        setHeldSeatIds((prev) => [...prev, seatId]);
+    const connectSocket = async () => {
+      try {
+        const res = await fetch("/api/auth/socket-token");
+        if (!res.ok) {
+          toast.error("Failed to authenticate real-time connection.");
+          return;
+        }
+        
+        const { token } = await res.json();
+        const socket = initSocket(token);
+        currentSocket = socket;
+
+        socket.emit("joinShowtime", showtime.id);
+
+        socket.on("initialHolds", (holds: { seatId: string; userId: string }[]) => {
+          // Exclude seats held by current user from the 'held by others' list
+          const othersHolds = holds
+            .filter((h) => h.userId !== userId)
+            .map((h) => h.seatId);
+          setHeldSeatIds(othersHolds);
+        });
+
+        socket.on("seatHeld", ({ seatId, userId: holderId }: { seatId: string; userId: string }) => {
+          if (holderId !== userId) {
+            setHeldSeatIds((prev) => [...prev, seatId]);
+          }
+        });
+
+        socket.on("seatReleased", ({ seatId, userId: holderId }: { seatId: string; userId: string }) => {
+          if (holderId !== userId) {
+            setHeldSeatIds((prev) => prev.filter((id) => id !== seatId));
+          } else {
+            // Server released our seat (e.g., TTL expired)
+            setSelectedSeatIds((prev) => prev.filter((id) => id !== seatId));
+          }
+        });
+
+        socket.on("seatsBooked", ({ seatIds }: { seatIds: string[] }) => {
+          setBookedSeatIdsLocal((prev) => Array.from(new Set([...prev, ...seatIds])));
+          setHeldSeatIds((prev) => prev.filter((id) => !seatIds.includes(id)));
+          setSelectedSeatIds((prev) => prev.filter((id) => !seatIds.includes(id)));
+        });
+
+        socket.on("holdRejected", ({ seatId, message }: { seatId: string; message: string }) => {
+          setSelectedSeatIds((prev) => prev.filter((id) => id !== seatId));
+          toast.error(message);
+        });
+
+      } catch (err) {
+        console.error("Socket error:", err);
       }
-    });
+    };
 
-    socket.on("seatReleased", ({ seatId, userId: holderId }: { seatId: string; userId: string }) => {
-      if (holderId !== userId) {
-        setHeldSeatIds((prev) => prev.filter((id) => id !== seatId));
-      }
-    });
-
-    socket.on("seatsBooked", ({ seatIds }: { seatIds: string[] }) => {
-      setBookedSeatIdsLocal((prev) => Array.from(new Set([...prev, ...seatIds])));
-      setHeldSeatIds((prev) => prev.filter((id) => !seatIds.includes(id)));
-      setSelectedSeatIds((prev) => prev.filter((id) => !seatIds.includes(id)));
-    });
+    connectSocket();
 
     return () => {
-      socket.off("initialHolds");
-      socket.off("seatHeld");
-      socket.off("seatReleased");
-      socket.off("seatsBooked");
+      if (currentSocket) {
+        currentSocket.off("initialHolds");
+        currentSocket.off("seatHeld");
+        currentSocket.off("seatReleased");
+        currentSocket.off("seatsBooked");
+        currentSocket.off("holdRejected");
+      }
     };
   }, [showtime.id, userId]);
 
@@ -78,15 +111,27 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
   const rows = Array.from(new Set(seats.map((s) => s.row))).sort();
   
   const toggleSeat = (seatId: string) => {
+    if (userId === "guest") {
+      toast.error("Please sign in to reserve seats.");
+      return;
+    }
+
     const isSelected = selectedSeatIds.includes(seatId);
     const socket = getSocket();
+    
+    if (!socket) return;
 
     if (isSelected) {
       setSelectedSeatIds((prev) => prev.filter((id) => id !== seatId));
-      socket.emit("releaseSeat", { showtimeId: showtime.id, seatId, userId });
+      socket.emit("releaseSeat", { showtimeId: showtime.id, seatId });
     } else {
+      // Client-side hard limit check before sending to server
+      if (selectedSeatIds.length >= 4) {
+        toast.error("You can only reserve up to 4 seats.");
+        return;
+      }
       setSelectedSeatIds((prev) => [...prev, seatId]);
-      socket.emit("holdSeat", { showtimeId: showtime.id, seatId, userId });
+      socket.emit("holdSeat", { showtimeId: showtime.id, seatId });
     }
   };
 

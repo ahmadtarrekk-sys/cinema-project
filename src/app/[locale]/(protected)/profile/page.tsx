@@ -80,7 +80,7 @@ export default async function ProfilePage() {
               <Ticket className="h-12 w-12 text-gold/50 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white">No active bookings</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                You haven't booked any movies yet. Your history will appear here.
+                You haven&apos;t booked any movies yet. Your history will appear here.
               </p>
               <Link href="/movies" className="mt-6 inline-block">
                 <Button className="bg-gold text-black hover:bg-gold-light font-semibold">
@@ -95,6 +95,7 @@ export default async function ProfilePage() {
                 const { movie, hall } = showtime;
                 const isPast = new Date(showtime.startTime) < new Date();
                 // Can cancel up to 2 hours before showtime
+                // eslint-disable-next-line react-hooks/purity
                 const canCancel = !isPast && (new Date(showtime.startTime).getTime() - Date.now() > 2 * 60 * 60 * 1000);
 
                 return (

@@ -14,11 +14,11 @@ import "../globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Aurora Cinema — Premium Movie Booking",
-    template: "%s | Aurora Cinema",
+    default: "Movie Time — Premium Movie Booking",
+    template: "%s | Movie Time",
   },
   description:
-    "Discover movies, reserve the perfect seats, and enjoy a world-class cinema experience. Aurora — your premium movie booking platform.",
+    "Discover movies, reserve the perfect seats, and enjoy a world-class cinema experience. Movie Time— your premium movie booking platform.",
   keywords: ["cinema", "movies", "booking", "tickets", "showtimes"],
 };
 

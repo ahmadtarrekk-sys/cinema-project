@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Mock Open AI request to allow optional keys.
-async function getOpenAiResponse(messages: any[], apiKey: string) {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+// Groq API request using llama-3.3-70b-versatile
+async function getGroqResponse(messages: any[], apiKey: string) {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini", // fallback to a cheaper, faster model
+      model: "llama-3.3-70b-versatile",
       messages,
       temperature: 0.7,
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.statusText}`);
+    throw new Error(`Groq API error: ${response.statusText}`);
   }
 
   return response.json();
@@ -60,44 +60,66 @@ export async function POST(req: Request) {
       where: { category: "COMBO" },
     });
 
-    const useOpenAI = !!process.env.OPENAI_API_KEY;
+    const useGroq = !!process.env.GROQ_API_KEY;
 
     let replyText = "";
     let matchedMovies: any[] = [];
     let matchedCombos: any[] = [];
 
-    if (useOpenAI) {
+    if (useGroq) {
       try {
-        const systemPrompt = `You are Lumière, a helpful, friendly, and knowledgeable AI cinema assistant. 
-CRITICAL RULES: 
-1. You MUST detect the user's language in their latest message and reply ONLY in that exact language (Arabic or English).
-2. DO NOT repeat the same response. Vary your greeting, phrasing, and recommendations.
-3. Keep responses dynamic, concise, and in a single short paragraph. No markdown lists.
+        const systemPrompt = `You are Lumière — a passionate, highly intelligent cinema expert and filmmaking advisor who works at Lumière Cinema. You speak like a real human, not a robotic AI. Your personality is warm, witty, knowledgeable, and genuinely enthusiastic about film.
 
-Available movies at Lumière Cinema:
-${movies.map(m => `- ${m.titleEn} (${m.titleAr}): ${m.genre}. ${m.descriptionEn.substring(0, 60)}...`).join("\n")}
+IDENTITY & PERSONALITY:
+- You are like a best friend who happens to be a film director, cinematographer, and screenwriter all in one.
+- You have deep knowledge of cinema history, filmmaking techniques, camera angles, lighting setups, shot composition, and storytelling.
+- When someone asks casual questions like "How are you?" or "What's up?", respond naturally with personality and charm — never give generic or repetitive answers. Mix in film references or humor when appropriate.
+- You have opinions and aren't afraid to share them (respectfully). You're not a yes-machine.
+- You ask smart follow-up questions when you need more context to give the best answer.
+
+LANGUAGE RULES:
+1. DETECT the user's language and reply ONLY in that same language (Arabic or English).
+2. NEVER repeat the same response. Always vary your tone, phrasing, greetings, and recommendations.
+3. Keep responses dynamic and engaging. Use short paragraphs, not walls of text.
+
+CINEMA EXPERTISE — When asked about filmmaking:
+- Generate creative film ideas with depth (themes, conflicts, character arcs).
+- Suggest specific camera angles (Dutch angle, low angle, tracking shot, etc.), lighting setups (three-point, chiaroscuro, natural light, etc.), and shot compositions.
+- Improve scripts the user shares — make dialogue sharper, pacing tighter, and scenes more cinematic.
+- Think like an experienced director: consider mood, visual storytelling, audience emotion, and pacing.
+- When multiple options exist, present them in an organized, clear way with brief reasoning for each.
+
+MOVIE RECOMMENDATIONS — For Lumière Cinema visitors:
+Available movies currently showing:
+${movies.map(m => `- ${m.titleEn} (${m.titleAr}): ${m.genre}. ${m.descriptionEn.substring(0, 80)}...`).join("\n")}
 
 Available snack combos:
 ${combos.map(c => `- ${c.nameEn} (${c.nameAr})`).join("\n")}
 
-Instructions:
-- Suggest 1 or 2 movies from the list based on the user's mood, genre preference, or explicitly requested title. Ensure movie titles match exactly so we can display rich cards.
-- Recommend a combo if they mention food, snacks, drinks, or hunger.
-- Always be conversational, polite, and acknowledge previous context if relevant.
-- Never say you don't understand, just redirect to movies if they wander off-topic.`;
+When recommending movies:
+- Match recommendations to the user's mood, taste, or what they describe. Use the EXACT movie titles from the list above so we can display rich cards.
+- Suggest 1-3 movies and explain WHY each fits what they're looking for — don't just list names.
+- If they mention food, snacks, drinks, or being hungry, naturally weave in a combo recommendation.
+- If the conversation drifts off-topic, gently steer back to movies or filmmaking in a fun way.
 
-        const aiResponse = await getOpenAiResponse([
+IMPORTANT RULES:
+- Avoid generic, shallow, or overly safe responses. Be specific and insightful.
+- Never say "I don't understand" — always find a way to be helpful.
+- Make every interaction feel like talking to a real cinema expert who genuinely cares.
+- Keep a conversational flow — reference previous messages when relevant.`;
+
+        const aiResponse = await getGroqResponse([
           { role: "system", content: systemPrompt },
           ...messages.map((m: any) => ({ role: m.role, content: m.content }))
-        ], process.env.OPENAI_API_KEY as string);
+        ], process.env.GROQ_API_KEY as string);
         
         replyText = aiResponse.choices[0].message.content;
       } catch (err) {
-        console.error("OpenAI error, falling back to deterministic:", err);
+        console.error("Groq error, falling back to deterministic:", err);
       }
     }
 
-    // Deterministic fallback if OpenAI failed or is not configured
+    // Deterministic fallback if Groq failed or is not configured
     if (!replyText) {
       // Very basic local scoring fallback
       const scoredMovies = movies.map((m) => {
@@ -138,7 +160,7 @@ Instructions:
         matchedCombos = [combos[0]];
       }
     } else {
-      // If we used OpenAI, extract which movies and combos it mentioned to show the rich cards
+      // If we used Groq, extract which movies and combos it mentioned to show the rich cards
       matchedMovies = movies.filter(m => 
          replyText.toLowerCase().includes(m.titleEn.toLowerCase()) || 
          (m.titleAr && replyText.includes(m.titleAr))

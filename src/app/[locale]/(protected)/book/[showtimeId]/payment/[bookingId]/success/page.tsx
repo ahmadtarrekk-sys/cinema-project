@@ -44,6 +44,7 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
       <div className="relative w-full max-w-lg text-center mt-12 mb-8">
         
         <div className="mb-8 relative w-full h-48 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src="/images/movies-bg.png" 
             alt="Success Celebration" 
@@ -109,6 +110,7 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
                 </div>
                 {/* QR Code integration using external API to avoid new dependencies */}
                 <div className="bg-white p-2 rounded-lg ml-4">
+                   {/* eslint-disable-next-line @next/next/no-img-element */}
                    <img 
                      src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${booking.id}`} 
                      alt="Booking QR Code"

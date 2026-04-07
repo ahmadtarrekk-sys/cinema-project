@@ -12,6 +12,18 @@ export function QrScanner() {
   const [validationResult, setValidationResult] = useState<any>(null);
   const [manualInput, setManualInput] = useState("");
 
+  const handleValidation = async (bookingId: string) => {
+    if (!bookingId.trim()) return;
+    
+    setIsValidating(true);
+    setValidationResult(null);
+    setScanResult(bookingId);
+
+    const result = await validateBooking(bookingId);
+    setValidationResult(result);
+    setIsValidating(false);
+  };
+
   useEffect(() => {
     // Only initialize scanner if we haven't scanned successfully yet
     if (scanResult) return;
@@ -42,18 +54,6 @@ export function QrScanner() {
       scanner.clear().catch(e => console.error("Failed to clear scanner", e));
     };
   }, [scanResult]);
-
-  const handleValidation = async (bookingId: string) => {
-    if (!bookingId.trim()) return;
-    
-    setIsValidating(true);
-    setValidationResult(null);
-    setScanResult(bookingId);
-
-    const result = await validateBooking(bookingId);
-    setValidationResult(result);
-    setIsValidating(false);
-  };
 
   const resetScanner = () => {
     setScanResult(null);

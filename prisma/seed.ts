@@ -233,7 +233,7 @@ async function main() {
   await prisma.showtime.createMany({ data: showtimeData });
 
   console.log('Seeding Concessions...');
-  await prisma.concessionItem.createMany({
+  await prisma.concessionItem.createMany({    
     data: [
       {
         nameEn: 'Large Caramel Popcorn',

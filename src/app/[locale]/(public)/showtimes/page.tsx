@@ -151,11 +151,14 @@ export default async function GlobalShowtimesPage({ searchParams, params }: Show
                     <div className="relative p-6 border-b md:border-b-0 md:border-r border-white/5 bg-black/20 flex flex-col md:flex-row md:items-start gap-4">
                        <Link href={`/movies/${movie.id}`} className="shrink-0 block group">
                          {movie.posterUrl ? (
-                            <img 
-                              src={movie.posterUrl} 
-                              alt={title} 
-                              className="w-24 md:w-full aspect-[2/3] object-cover rounded-xl shadow-lg border border-white/10 group-hover:border-gold/50 transition-colors"
-                            />
+                            <>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img 
+                                src={movie.posterUrl} 
+                                alt={title} 
+                                className="w-24 md:w-full aspect-[2/3] object-cover rounded-xl shadow-lg border border-white/10 group-hover:border-gold/50 transition-colors"
+                              />
+                            </>
                          ) : (
                             <div className="w-24 md:w-full aspect-[2/3] bg-white/5 rounded-xl border border-white/10 flex items-center justify-center group-hover:border-gold/50 transition-colors">
                               <Film className="w-8 h-8 text-white/20" />

@@ -26,7 +26,7 @@ export default async function AdminDashboardPage() {
           Admin Dashboard
         </h1>
         <p className="text-muted-foreground mt-2">
-          Welcome back, {session?.user?.name}. Here's an overview of Lumière.
+          Welcome back, {session?.user?.name}. Here&apos;s an overview of Lumière.
         </p>
       </div>
 

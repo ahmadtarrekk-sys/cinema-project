@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { getSocket, initSocket } from "@/lib/socket";
 
 export async function createBookingDraft(data: {
   showtimeId: string;
@@ -14,6 +15,11 @@ export async function createBookingDraft(data: {
       return { success: false, error: "Unauthorized" };
     }
 
+    const userExists = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!userExists) {
+      return { success: false, error: "Session invalid. Please log out and log back in." };
+    }
+
     // 1. Double check that seats are not already booked for this showtime
     const existingTickets = await prisma.ticket.findMany({
       where: {
@@ -24,6 +30,20 @@ export async function createBookingDraft(data: {
 
     if (existingTickets.length > 0) {
       return { success: false, error: "One or more seats are already booked." };
+    }
+
+    // 1.5. Verify that the user currently holds the lock for all requested seats in MongoDB
+    for (const seatId of data.seatIds) {
+      const lock = await prisma.seatHold.findUnique({
+        where: { showtimeId_seatId: { showtimeId: data.showtimeId, seatId } }
+      });
+      
+      if (!lock || lock.userId !== session.user.id || lock.expiresAt <= new Date()) {
+        return { 
+          success: false, 
+          error: "Seat reservation expired or held by someone else. Please refresh and select seats again." 
+        };
+      }
     }
 
     // 2. Fetch seat details to compute ticket prices accurately on the server
@@ -72,6 +92,12 @@ export async function createBookingDraft(data: {
           }
         }
       });
+      
+      // After successful creation of DRAFT, wipe the soft holds
+      await tx.seatHold.deleteMany({
+         where: { showtimeId: data.showtimeId, seatId: { in: data.seatIds } }
+      });
+
       return b;
     });
 

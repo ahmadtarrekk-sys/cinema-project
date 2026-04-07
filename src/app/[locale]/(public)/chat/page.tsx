@@ -13,7 +13,7 @@ export default async function ChatPage() {
         Starlight AI Assistant
       </h1>
       <p className="text-muted-foreground max-w-lg mb-8">
-        We've upgraded our AI assistant to be available everywhere! Simply click the floating chat icon in the bottom right corner of any page to start getting personalized movie and snack recommendations.
+        We&apos;ve upgraded our AI assistant to be available everywhere! Simply click the floating chat icon in the bottom right corner of any page to start getting personalized movie and snack recommendations.
       </p>
     </div>
   );

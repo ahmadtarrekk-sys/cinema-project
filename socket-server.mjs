@@ -1,13 +1,19 @@
 import { Server } from "socket.io";
 import http from "http";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
 
+dotenv.config();
+
+const prisma = new PrismaClient();
 const PORT = 3001;
+const SOCKET_SECRET = process.env.SOCKET_SECRET || "development-secret";
 
-// Simple Node HTTP server to attach Socket.IO
 const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.writeHead(200);
-  res.end("Socket.IO Server running");
+  res.end("Socket.IO Server running (MongoDB)");
 });
 
 const io = new Server(server, {
@@ -17,78 +23,122 @@ const io = new Server(server, {
   },
 });
 
-// In-memory store for held seats
-// Structure: { showtimeId: { seatId: { userId, timestamp } } }
-const heldSeats = new Map();
+const HOLD_DURATION_SEC = 180; // 3 minutes
+const MAX_SEATS_PER_USER = 4;
 
-const HOLD_DURATION_MS = 5 * 60 * 1000; // 5 minutes
-
-io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
-
-  socket.on("joinShowtime", (showtimeId) => {
-    socket.join(showtimeId);
-    
-    // Dispatch currently held seats for this showtime to the joining client
-    const showtimeHolds = heldSeats.get(showtimeId) || new Map();
-    const activeHolds = Array.from(showtimeHolds.entries())
-      .filter(([_, hold]) => Date.now() - hold.timestamp < HOLD_DURATION_MS)
-      .map(([seatId, hold]) => ({ seatId, userId: hold.userId }));
-      
-    socket.emit("initialHolds", activeHolds);
-  });
-
-  socket.on("holdSeat", ({ showtimeId, seatId, userId }) => {
-    let showtimeHolds = heldSeats.get(showtimeId);
-    if (!showtimeHolds) {
-      showtimeHolds = new Map();
-      heldSeats.set(showtimeId, showtimeHolds);
-    }
-    
-    showtimeHolds.set(seatId, { userId, timestamp: Date.now() });
-    
-    // Broadcast to everyone in the showtime room
-    io.to(showtimeId).emit("seatHeld", { seatId, userId });
-  });
-
-  socket.on("releaseSeat", ({ showtimeId, seatId, userId }) => {
-    const showtimeHolds = heldSeats.get(showtimeId);
-    if (showtimeHolds && showtimeHolds.has(seatId)) {
-      const hold = showtimeHolds.get(seatId);
-      if (hold.userId === userId) {
-        showtimeHolds.delete(seatId);
-        io.to(showtimeId).emit("seatReleased", { seatId, userId });
-      }
-    }
-  });
-
-  socket.on("seatsBooked", ({ showtimeId, seatIds }) => {
-    const showtimeHolds = heldSeats.get(showtimeId);
-    if (showtimeHolds) {
-      seatIds.forEach((seatId) => showtimeHolds.delete(seatId));
-    }
-    io.to(showtimeId).emit("seatsBooked", { seatIds });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-    // Ideally, we'd track which seats this socket held and release them,
-    // but for simplicity, they will expire automatically after 5 minutes.
-  });
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) return next(new Error("Authentication error: No token provided"));
+  
+  try {
+    const decoded = jwt.verify(token, SOCKET_SECRET);
+    socket.userId = decoded.userId;
+    next();
+  } catch (err) {
+    next(new Error("Authentication error: Invalid token"));
+  }
 });
 
-// Clean up expired holds periodically (every minute)
-setInterval(() => {
-  const now = Date.now();
-  for (const [showtimeId, showtimeHolds] of heldSeats.entries()) {
-    for (const [seatId, hold] of showtimeHolds.entries()) {
-      if (now - hold.timestamp >= HOLD_DURATION_MS) {
-        showtimeHolds.delete(seatId);
-        io.to(showtimeId).emit("seatReleased", { seatId, userId: hold.userId });
+io.on("connection", (socket) => {
+  const userId = socket.userId;
+
+  socket.on("joinShowtime", async (showtimeId) => {
+    socket.join(showtimeId);
+    
+    // Fetch currently held seats
+    const activeHolds = await prisma.seatHold.findMany({
+      where: {
+        showtimeId,
+        expiresAt: { gt: new Date() }
       }
+    });
+      
+    socket.emit("initialHolds", activeHolds.map(h => ({ seatId: h.seatId, userId: h.userId })));
+  });
+
+  socket.on("holdSeat", async ({ showtimeId, seatId }, callback) => {
+    try {
+      // 1. Max seats check
+      const currentHolds = await prisma.seatHold.count({
+        where: { showtimeId, userId, expiresAt: { gt: new Date() } }
+      });
+
+      if (currentHolds >= MAX_SEATS_PER_USER) {
+        if (typeof callback === 'function') callback({ error: "Max limits reached" });
+        return socket.emit("holdRejected", { seatId, message: `You can only reserve up to ${MAX_SEATS_PER_USER} seats.` });
+      }
+
+      // 2. Prevent race condition by verifying existing active locks
+      const existingLock = await prisma.seatHold.findUnique({
+        where: { showtimeId_seatId: { showtimeId, seatId } }
+      });
+
+      if (existingLock && existingLock.userId !== userId && existingLock.expiresAt > new Date()) {
+        if (typeof callback === 'function') callback({ error: "Seat already held" });
+        return;
+      }
+
+      // 3. Atomically upsert the seat hold
+      const expiresAt = new Date(Date.now() + HOLD_DURATION_SEC * 1000);
+      await prisma.seatHold.upsert({
+        where: { showtimeId_seatId: { showtimeId, seatId } },
+        create: { showtimeId, seatId, userId, expiresAt },
+        update: { userId, expiresAt }
+      });
+
+      io.to(showtimeId).emit("seatHeld", { seatId, userId });
+      if (typeof callback === 'function') callback({ success: true });
+    } catch (err) {
+      console.error("Lock error:", err);
+      if (typeof callback === 'function') callback({ error: "Server Error" });
     }
+  });
+
+  socket.on("releaseSeat", async ({ showtimeId, seatId }) => {
+    try {
+      await prisma.seatHold.deleteMany({
+        where: { showtimeId, seatId, userId }
+      });
+      io.to(showtimeId).emit("seatReleased", { seatId, userId });
+    } catch(err) {
+      // Ignore if not present
+    }
+  });
+
+  socket.on("seatsBooked", async ({ showtimeId, seatIds }) => {
+    try {
+      await prisma.seatHold.deleteMany({
+        where: { showtimeId, seatId: { in: seatIds } }
+      });
+      io.to(showtimeId).emit("seatsBooked", { seatIds });
+    } catch(err) {}
+  });
+
+  socket.on("disconnect", () => {});
+});
+
+// Periodic Cleanup of Expired Holds
+setInterval(async () => {
+  try {
+    const expiredHolds = await prisma.seatHold.findMany({
+      where: { expiresAt: { lte: new Date() } }
+    });
+
+    if (expiredHolds.length > 0) {
+      // Broadcast release
+      expiredHolds.forEach(hold => {
+        io.to(hold.showtimeId).emit("seatReleased", { seatId: hold.seatId, userId: hold.userId });
+      });
+
+      // Delete from DB
+      await prisma.seatHold.deleteMany({
+        where: { id: { in: expiredHolds.map(h => h.id) } }
+      });
+    }
+  } catch (err) {
+    console.error("Cleanup error:", err);
   }
-}, 60000);
+}, 5000); // Check every 5s
 
 server.listen(PORT, () => {
   console.log(`Socket.IO Server running on http://localhost:${PORT}`);

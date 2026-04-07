@@ -29,6 +29,7 @@ export default async function ConcessionsPage({ params }: { params: { bookingId:
       </div>
 
       <div className="mb-10 relative w-full h-56 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           src="/images/auth-bg.png" 
           alt="Delicious cinema snacks and drinks" 

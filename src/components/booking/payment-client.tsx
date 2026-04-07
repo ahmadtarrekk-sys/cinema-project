@@ -179,7 +179,7 @@ export function PaymentClient({ booking, isArabic, stripeEnabled }: PaymentClien
             
             {stripeEnabled && (
               <p className="mt-6 text-sm text-muted-foreground bg-white/5 p-4 rounded-lg border border-white/5">
-                <strong>Note:</strong> Since Stripe checkout is enabled in your environment, clicking pay will safely redirect you to Stripe's hosted gateway for ultimate security, bypassing this local mock form.
+                <strong>Note:</strong> Since Stripe checkout is enabled in your environment, clicking pay will safely redirect you to Stripe&apos;s hosted gateway for ultimate security, bypassing this local mock form.
               </p>
             )}
           </div>
