@@ -33,7 +33,7 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
 
   return (
     <div className="relative min-h-screen bg-movies bg-blend-overlay bg-background/80">
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm pointer-events-none" />
+      <div className="absolute inset-0 overlay-scrim pointer-events-none" />
       <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -52,7 +52,7 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                 name="query"
                 defaultValue={query}
                 placeholder={t("search")}
-                className="w-full rounded-full border border-white/10 bg-white/5 pl-9 pr-4 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                className="w-full rounded-full border border-border bg-foreground/5 pl-9 pr-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
               />
               {genre && <input type="hidden" name="genre" value={genre} />}
             </form>
@@ -67,7 +67,7 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
               className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                 !genre 
                   ? "bg-gold text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]" 
-                  : "bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10 hover:text-white"
+                  : "bg-foreground/5 border border-border text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
               }`}
             >
               {t("filter_all")}
@@ -84,7 +84,7 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                   className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                     isSelected 
                       ? "bg-gold text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]" 
-                      : "bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10 hover:text-white"
+                      : "bg-foreground/5 border border-border text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
                   }`}
                 >
                   {g}

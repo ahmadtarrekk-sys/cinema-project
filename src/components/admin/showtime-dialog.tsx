@@ -76,7 +76,7 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-white/70 hover:text-white hover:bg-white/10"
+          className="text-muted-foreground hover:text-foreground hover:bg-foreground/10"
           onClick={() => setIsOpen(true)}
         >
           <Edit2 className="h-4 w-4" />
@@ -89,22 +89,22 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-cinema-surface border border-white/10 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/50 sticky top-0 z-10">
-              <h2 className="text-xl font-bold text-white">{isEditing ? "Edit Showtime" : "Schedule Movie"}</h2>
+          <div className="bg-cinema-surface border border-border rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border flex justify-between items-center bg-background/80 sticky top-0 z-10">
+              <h2 className="text-xl font-bold text-foreground">{isEditing ? "Edit Showtime" : "Schedule Movie"}</h2>
               <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>Close</Button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Movie</label>
+                  <label className="text-sm font-medium text-foreground">Movie</label>
                   <select 
                     name="movieId" 
                     value={formData.movieId} 
                     onChange={handleChange} 
                     required 
-                    className="w-full bg-white/5 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-white [&>option]:bg-zinc-900"
+                    className="w-full bg-foreground/5 border border-border rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-foreground [&>option]:bg-muted"
                   >
                     {movies.map((m) => (
                       <option key={m.id} value={m.id}>{m.titleEn}</option>
@@ -114,13 +114,13 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Cinema</label>
+                    <label className="text-sm font-medium text-foreground">Cinema</label>
                     <select 
                       name="cinemaId" 
                       value={formData.cinemaId} 
                       onChange={handleChange} 
                       required 
-                      className="w-full bg-white/5 border border-white/10 rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-white [&>option]:bg-zinc-900"
+                      className="w-full bg-foreground/5 border border-border rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-foreground [&>option]:bg-muted"
                     >
                       {cinemas.map((c) => (
                         <option key={c.id} value={c.id}>{c.nameEn}</option>
@@ -128,14 +128,14 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Hall</label>
+                    <label className="text-sm font-medium text-foreground">Hall</label>
                     <select 
                       name="hallId" 
                       value={formData.hallId} 
                       onChange={handleChange} 
                       required 
                       disabled={!selectedCinema || selectedCinema.halls.length === 0}
-                      className="w-full bg-white/5 border border-white/10 rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-white disabled:opacity-50 [&>option]:bg-zinc-900"
+                      className="w-full bg-foreground/5 border border-border rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-foreground disabled:opacity-50 [&>option]:bg-muted"
                     >
                       {selectedCinema?.halls.map((h: any) => (
                         <option key={h.id} value={h.id}>{h.nameEn} ({h.type})</option>
@@ -146,18 +146,18 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Start Time</label>
+                    <label className="text-sm font-medium text-foreground">Start Time</label>
                     <Input 
                       type="datetime-local" 
                       name="startTime" 
                       value={formData.startTime} 
                       onChange={handleChange} 
                       required 
-                      className="bg-white/5 border-white/10 [color-scheme:dark]" 
+                      className="bg-foreground/5 border-border [color-scheme:dark]" 
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Base Price (EGP)</label>
+                    <label className="text-sm font-medium text-foreground">Base Price (EGP)</label>
                     <Input 
                       type="number" 
                       step="0.01"
@@ -165,14 +165,14 @@ export function ShowtimeDialog({ movies, cinemas, showtime }: { movies: any[], c
                       value={formData.basePrice} 
                       onChange={handleChange} 
                       required 
-                      className="bg-white/5 border-white/10" 
+                      className="bg-foreground/5 border-border" 
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-white/10 flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-white/10">
+              <div className="pt-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border">
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isPending} className="bg-gold text-black hover:bg-gold-light">

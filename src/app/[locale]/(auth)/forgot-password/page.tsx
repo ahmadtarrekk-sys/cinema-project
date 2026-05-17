@@ -23,12 +23,12 @@ export default async function ForgotPasswordPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-cinema-surface/50 p-6 backdrop-blur-xl sm:p-8">
+        <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl sm:p-8">
           <ForgotPasswordForm />
         </div>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          <Link href="/login" className="flex items-center justify-center gap-1 font-medium hover:text-white transition-colors">
+          <Link href="/login" className="flex items-center justify-center gap-1 font-medium hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to login
           </Link>

@@ -27,9 +27,11 @@ export default async function AdminLayout({
   ];
 
   return (
-    <div className="flex min-h-screen pt-16">
+    <div className="flex min-h-screen pt-16 bg-dashboard bg-blend-overlay bg-background/80 relative">
+      <div className="absolute inset-0 overlay-scrim pointer-events-none" />
+
       {/* Sidebar */}
-      <aside className="w-64 fixed inset-y-0 left-0 pt-16 border-r border-white/10 bg-black/50 backdrop-blur-xl hidden md:block z-40">
+      <aside className="w-64 fixed inset-y-0 left-0 pt-16 border-r border-border bg-card/80 backdrop-blur-xl hidden md:block z-40">
         <div className="p-6">
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
             Admin Panel
@@ -39,7 +41,7 @@ export default async function AdminLayout({
               <Link 
                 key={link.href} 
                 href={link.href}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
               >
                 <link.icon className="h-4 w-4" />
                 {link.label}

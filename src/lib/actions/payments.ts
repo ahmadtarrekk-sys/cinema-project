@@ -19,17 +19,38 @@ export async function processPaymentMock(bookingId: string) {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     const booking = await prisma.booking.findUnique({
-      where: { id: bookingId }
+      where: { id: bookingId },
+      include: { tickets: true }
     });
 
     if (!booking) return { success: false, error: "Booking not found" };
     if (booking.userId !== session.user.id) return { success: false, error: "Unauthorized" };
     if (booking.status !== "DRAFT") return { success: false, error: "Booking is not in a valid state for payment" };
 
+    // Verify SeatHolds are still active
+    const seatIds = booking.tickets.map(t => t.seatId);
+    for (const seatId of seatIds) {
+      const lock = await prisma.seatHold.findUnique({
+        where: { showtimeId_seatId: { showtimeId: booking.showtimeId, seatId } }
+      });
+      
+      if (!lock || lock.userId !== session.user.id || lock.expiresAt <= new Date()) {
+        return { 
+          success: false, 
+          error: "Your seat reservation expired. Please return to seat selection to select seats again." 
+        };
+      }
+    }
+
     // Update the booking status to CONFIRMED
     await prisma.booking.update({
       where: { id: bookingId },
       data: { status: "CONFIRMED" }
+    });
+
+    // Delete SeatHolds
+    await prisma.seatHold.deleteMany({
+      where: { showtimeId: booking.showtimeId, seatId: { in: seatIds } }
     });
 
     return { success: true };
@@ -53,13 +74,29 @@ export async function createStripeCheckoutSession(bookingId: string) {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
-        showtime: { include: { movie: true } }
+        showtime: { include: { movie: true } },
+        tickets: true
       }
     });
 
     if (!booking) return { success: false, error: "Booking not found" };
     if (booking.userId !== session.user.id) return { success: false, error: "Unauthorized" };
     if (booking.status !== "DRAFT") return { success: false, error: "Booking is not in a valid state for payment" };
+
+    // Verify SeatHolds are still active
+    const seatIds = booking.tickets.map(t => t.seatId);
+    for (const seatId of seatIds) {
+      const lock = await prisma.seatHold.findUnique({
+        where: { showtimeId_seatId: { showtimeId: booking.showtimeId, seatId } }
+      });
+      
+      if (!lock || lock.userId !== session.user.id || lock.expiresAt <= new Date()) {
+        return { 
+          success: false, 
+          error: "Your seat reservation expired. Please return to seat selection to select seats again." 
+        };
+      }
+    }
 
     // Determine base URL dynamically or from env
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";

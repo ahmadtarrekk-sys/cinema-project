@@ -1,12 +1,12 @@
 {
   "Home": {
-    "title": "Your Night at \n <brand>Aurora</brand> \n Starts Here",
-    "subtitle": "Discover films, choose your perfect seats, grab snacks — all in one seamless, cinematic experience. Welcome to Aurora.",
+    "title": "Your Night at \n <brand>Movie Time</brand> \n Starts Here",
+    "subtitle": "Discover films, choose your perfect seats, grab snacks — all in one seamless, cinematic experience. Welcome to Movie Time.",
     "badge": "Premium Cinema Experience",
     "cta": {
       "browse": "Browse Movies",
       "find": "Find a Cinema",
-      "join": "Join Aurora"
+      "join": "Join Movie Time"
     },
     "stats": {
       "cinemas": "Cinemas",
@@ -42,7 +42,7 @@
   },
   "Movies": {
     "title": "Now Showing",
-    "subtitle": "Discover the latest blockbuster releases and indie gems at Aurora.",
+    "subtitle": "Discover the latest blockbuster releases and indie gems at Movie Time.",
     "search": "Search movies...",
     "filter_all": "All Genres",
     "duration": "{mins} min",
@@ -66,13 +66,13 @@
     "brand_desc": "Your premium cinema booking experience. Discover movies, reserve the perfect seats, and enjoy a world-class theater visit from start to finish.",
     "explore": "Explore",
     "account": "Account",
-    "rights": "Aurora Cinema. All rights reserved.",
+    "rights": "Movie Time Cinema. All rights reserved.",
     "crafted": "Crafted with passion for film lovers."
   },
   "Auth": {
     "login_title": "Welcome Back",
     "login_subtitle": "Sign in to access your bookings and personalized recommendations.",
-    "register_title": "Join Aurora",
+    "register_title": "Join Movie Time",
     "register_subtitle": "Create an account to unlock the ultimate cinematic journey.",
     "name": "Full Name",
     "email": "Email Address",
@@ -85,7 +85,7 @@
     "login_link": "Log in",
     "invalid_credentials": "The email or password you entered is incorrect.",
     "login_success": "Successfully signed in!",
-    "register_success": "Account created successfully! Welcome to Aurora.",
+    "register_success": "Account created successfully! Welcome to Movie Time.",
     "generic_error": "An error occurred. Please try again."
   },
   "Exceptions": {

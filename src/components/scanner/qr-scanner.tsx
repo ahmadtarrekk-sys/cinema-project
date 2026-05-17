@@ -1,162 +1,238 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { validateBooking } from "@/lib/actions/scanner";
-import { CheckCircle, XCircle, Loader2, QrCode } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { CheckCircle2, XCircle, Loader2, Camera, RotateCcw, Keyboard, Ticket, MapPin, Clock, User as UserIcon } from "lucide-react";
+import { format } from "date-fns";
 
 export function QrScanner() {
-  const [scanResult, setScanResult] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState<any>(null);
-  const [manualInput, setManualInput] = useState("");
+  const [scannerReady, setScannerReady] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
+  const [manualId, setManualId] = useState("");
+  const scannerRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleValidation = async (bookingId: string) => {
-    if (!bookingId.trim()) return;
-    
+  const handleValidate = useCallback(async (bookingId: string) => {
+    if (isValidating) return;
     setIsValidating(true);
-    setValidationResult(null);
-    setScanResult(bookingId);
+    setError(null);
+    setResult(null);
 
-    const result = await validateBooking(bookingId);
-    setValidationResult(result);
-    setIsValidating(false);
-  };
+    try {
+      const res = await validateBooking(bookingId.trim());
+      if (res.success) {
+        setResult(res.booking);
+        toast.success("Ticket validated successfully!");
+      } else {
+        setError(res.error || "Invalid ticket.");
+        toast.error(res.error || "Invalid ticket.");
+      }
+    } catch (err) {
+      setError("Failed to validate. Try again.");
+      toast.error("Validation failed.");
+    } finally {
+      setIsValidating(false);
+    }
+  }, [isValidating]);
 
+  // Dynamically import html5-qrcode (client-only, avoids SSR issues)
   useEffect(() => {
-    // Only initialize scanner if we haven't scanned successfully yet
-    if (scanResult) return;
+    if (manualMode || result || error) return;
 
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 },
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-      },
-      false
-    );
+    let scanner: any = null;
 
-    scanner.render(onScanSuccess, onScanFailure);
+    const initScanner = async () => {
+      try {
+        const { Html5QrcodeScanner, Html5QrcodeScanType } = await import("html5-qrcode");
 
-    function onScanSuccess(decodedText: string) {
-      scanner.clear(); // Stop scanning once we get a hit
-      setScanResult(decodedText);
-      handleValidation(decodedText);
-    }
+        if (!containerRef.current) return;
 
-    function onScanFailure() {
-      // ignore empty frames
-    }
+        scanner = new Html5QrcodeScanner(
+          "qr-reader",
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+            rememberLastUsedCamera: true,
+          },
+          false
+        );
+
+        scanner.render(
+          (decodedText: string) => {
+            // On successful scan
+            scanner.clear().catch(() => {});
+            handleValidate(decodedText);
+          },
+          () => {
+            // Scan failure (ignore — it fires constantly while scanning)
+          }
+        );
+
+        scannerRef.current = scanner;
+        setScannerReady(true);
+      } catch (err) {
+        console.error("Failed to initialize scanner:", err);
+        setError("Camera access failed. Try manual input mode.");
+      }
+    };
+
+    initScanner();
 
     return () => {
-      scanner.clear().catch(e => console.error("Failed to clear scanner", e));
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch((e: any) => console.error("Failed to clear scanner", e));
+        scannerRef.current = null;
+      }
     };
-  }, [scanResult]);
+  }, [manualMode, result, error, handleValidate]);
 
   const resetScanner = () => {
-    setScanResult(null);
-    setValidationResult(null);
-    setManualInput("");
+    setResult(null);
+    setError(null);
+    setManualId("");
+    setScannerReady(false);
+  };
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (manualId.trim()) {
+      handleValidate(manualId.trim());
+    }
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-6">
-      {!scanResult && (
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center justify-center gap-2">
-            <QrCode className="h-5 w-5 text-gold" />
-            Scan Ticket QR
-          </h2>
-          {/* HTML5 QR Code Container */}
-          <div id="reader" className="overflow-hidden rounded-xl bg-zinc-900 mx-auto max-w-[400px]"></div>
-          
-          {/* Manual Input Fallback */}
-          <div className="mt-8 pt-6 border-t border-white/10">
-            <p className="text-sm text-muted-foreground mb-3 text-center">Or enter booking ID manually:</p>
-            <div className="flex gap-3 max-w-md mx-auto">
-              <input
-                type="text"
-                placeholder="Booking ID..."
-                value={manualInput}
-                onChange={(e) => setManualInput(e.target.value)}
-                className="flex-1 rounded-sm border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
-                onKeyDown={(e) => e.key === "Enter" && handleValidation(manualInput)}
-              />
-              <Button onClick={() => handleValidation(manualInput)} disabled={!manualInput.trim()}>
-                Verify
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isValidating && (
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-12 backdrop-blur-xl text-center flex flex-col items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-gold mb-4" />
-          <h3 className="text-xl font-medium text-white">Validating Ticket...</h3>
-          <p className="text-muted-foreground mt-2 font-mono">{scanResult}</p>
-        </div>
-      )}
-
-      {validationResult && !isValidating && (
-        <div className={`rounded-2xl border p-8 backdrop-blur-xl text-center shadow-2xl relative overflow-hidden
-          ${validationResult.success 
-            ? 'border-green-500/30 bg-green-500/10' 
-            : 'border-red-500/30 bg-red-500/10'}`}>
-          
-          <div className={`absolute top-0 left-0 w-full h-2 ${validationResult.success ? 'bg-green-500' : 'bg-red-500'}`} />
-          
-          <div className="flex justify-center mb-6">
-            {validationResult.success ? (
-              <CheckCircle className="h-16 w-16 text-green-500" />
-            ) : (
-              <XCircle className="h-16 w-16 text-red-500" />
-            )}
-          </div>
-
-          <h3 className="font-display text-3xl font-bold text-white mb-2">
-            {validationResult.success ? "Ticket Valid!" : "Ticket Invalid"}
-          </h3>
-
-          {!validationResult.success ? (
-            <p className="text-red-300 font-medium text-lg mt-4">{validationResult.error}</p>
-          ) : (
-            <div className="mt-6 text-left bg-black/40 rounded-xl p-5 border border-white/5 space-y-3">
-               <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                 <span className="text-muted-foreground">Movie</span>
-                 <span className="font-bold text-white">{validationResult.booking.showtime.movie.titleEn}</span>
-               </div>
-               <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                 <span className="text-muted-foreground">Location</span>
-                 <span className="font-medium text-white">
-                   {validationResult.booking.showtime.hall.cinema.nameEn} • {validationResult.booking.showtime.hall.nameEn}
-                 </span>
-               </div>
-               <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                 <span className="text-muted-foreground">Customer</span>
-                 <span className="font-medium text-white">{validationResult.booking.user.name}</span>
-               </div>
-               <div className="pt-2">
-                 <div className="text-sm text-muted-foreground mb-2">Seats ({validationResult.booking.tickets.length})</div>
-                 <div className="flex flex-wrap gap-2">
-                   {validationResult.booking.tickets.map((t: any) => (
-                      <span key={t.id} className="bg-gold/20 border border-gold/40 text-gold px-3 py-1 rounded-md text-lg font-bold">
-                        {t.seat.row}{t.seat.column}
-                      </span>
-                   ))}
-                 </div>
-               </div>
-            </div>
-          )}
-
-          <Button 
-            className="mt-8 w-full bg-white/10 hover:bg-white/20 text-white font-semibold"
-            onClick={resetScanner}
+    <div className="space-y-6">
+      {/* Mode toggle */}
+      {!result && !error && (
+        <div className="flex gap-2 justify-center">
+          <Button
+            variant={!manualMode ? "default" : "outline"}
+            size="sm"
+            className={!manualMode ? "bg-gold text-black hover:bg-gold-light" : "border-border"}
+            onClick={() => { setManualMode(false); resetScanner(); }}
           >
-            Scan Another Ticket
+            <Camera className="h-4 w-4 mr-2" />
+            Camera Scan
           </Button>
+          <Button
+            variant={manualMode ? "default" : "outline"}
+            size="sm"
+            className={manualMode ? "bg-gold text-black hover:bg-gold-light" : "border-border"}
+            onClick={() => setManualMode(true)}
+          >
+            <Keyboard className="h-4 w-4 mr-2" />
+            Manual Input
+          </Button>
+        </div>
+      )}
+
+      {/* Loading */}
+      {isValidating && (
+        <div className="flex flex-col items-center gap-4 py-12">
+          <Loader2 className="h-10 w-10 animate-spin text-gold" />
+          <p className="text-muted-foreground">Validating ticket...</p>
+        </div>
+      )}
+
+      {/* Camera scanner */}
+      {!manualMode && !result && !error && !isValidating && (
+        <div ref={containerRef} className="rounded-xl overflow-hidden border border-border bg-muted/30">
+          <div id="qr-reader" className="w-full" />
+        </div>
+      )}
+
+      {/* Manual input */}
+      {manualMode && !result && !error && !isValidating && (
+        <form onSubmit={handleManualSubmit} className="space-y-4">
+          <div>
+            <label className="text-sm text-muted-foreground mb-2 block">Enter Booking ID</label>
+            <input
+              type="text"
+              value={manualId}
+              onChange={(e) => setManualId(e.target.value)}
+              placeholder="e.g. 661f2a3b4c5d6e7f8a9b0c1d"
+              className="w-full rounded-lg border border-border bg-card/80 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50 font-mono"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-gold text-black hover:bg-gold-light font-semibold"
+            disabled={!manualId.trim()}
+          >
+            Validate Ticket
+          </Button>
+        </form>
+      )}
+
+      {/* Error result */}
+      {error && !isValidating && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center space-y-4">
+          <XCircle className="h-12 w-12 text-red-400 mx-auto" />
+          <h3 className="text-lg font-bold text-red-300">Invalid Ticket</h3>
+          <p className="text-sm text-red-200/80">{error}</p>
+          <Button onClick={resetScanner} variant="outline" className="border-red-500/30 text-red-300 hover:bg-red-500/10">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Scan Again
+          </Button>
+        </div>
+      )}
+
+      {/* Success result */}
+      {result && !isValidating && (
+        <div className="rounded-xl border border-green-500/30 bg-green-500/10 overflow-hidden">
+          <div className="p-6 text-center border-b border-green-500/20">
+            <CheckCircle2 className="h-12 w-12 text-green-400 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-green-300">Valid Ticket ✓</h3>
+          </div>
+          <div className="p-6 space-y-4 text-sm">
+            <div className="flex items-center gap-3">
+              <Ticket className="h-4 w-4 text-gold flex-shrink-0" />
+              <div>
+                <p className="text-foreground font-semibold">{result.movieTitle}</p>
+                <p className="text-muted-foreground text-xs">{result.movieTitleAr}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <MapPin className="h-4 w-4 text-gold flex-shrink-0" />
+              <p className="text-foreground/80">{result.cinemaName} — {result.hallName}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Clock className="h-4 w-4 text-gold flex-shrink-0" />
+              <p className="text-foreground/80">{format(new Date(result.showtime), "EEEE, MMM d · h:mm a")}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <UserIcon className="h-4 w-4 text-gold flex-shrink-0" />
+              <p className="text-foreground/80">{result.customerName} ({result.customerEmail})</p>
+            </div>
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Seats</span>
+                <span className="text-foreground font-mono">
+                  {result.seats.map((s: any) => `${s.row}${s.column}`).join(", ")}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm mt-2">
+                <span className="text-muted-foreground">Tickets</span>
+                <span className="text-foreground">{result.ticketCount}</span>
+              </div>
+              <div className="flex justify-between text-sm mt-2">
+                <span className="text-muted-foreground">Total</span>
+                <span className="text-gold font-bold">EGP {result.totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 border-t border-green-500/20">
+            <Button onClick={resetScanner} className="w-full bg-gold text-black hover:bg-gold-light font-semibold">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Scan Next Ticket
+            </Button>
+          </div>
         </div>
       )}
     </div>

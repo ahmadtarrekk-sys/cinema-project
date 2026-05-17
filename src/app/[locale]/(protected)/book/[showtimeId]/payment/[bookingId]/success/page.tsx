@@ -43,21 +43,21 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
       
       <div className="relative w-full max-w-lg text-center mt-12 mb-8">
         
-        <div className="mb-8 relative w-full h-48 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+        <div className="mb-8 relative w-full h-48 rounded-2xl overflow-hidden border border-border shadow-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src="/images/movies-bg.png" 
             alt="Success Celebration" 
             className="w-full h-full object-cover object-center opacity-80"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
             <div className="rounded-full bg-green-500/20 p-3 mb-2 relative">
               <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping opacity-75" />
               <CheckCircle className="h-8 w-8 text-green-500 relative z-10" />
             </div>
-            <h1 className="font-display text-3xl font-bold tracking-tight text-white mb-1 drop-shadow-lg">
+            <h1 className="font-display text-3xl font-bold tracking-tight text-white dark:text-white mb-1 text-on-image-strong">
               Booking Confirmed!
             </h1>
             <p className="text-white/80 text-sm font-medium drop-shadow-md">
@@ -66,8 +66,8 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-cinema-surface/50 p-6 backdrop-blur-xl text-left shadow-2xl">
-          <h2 className="text-xl font-bold text-white mb-4 border-b border-white/10 pb-4">
+        <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl text-left shadow-2xl">
+          <h2 className="text-xl font-bold text-foreground mb-4 border-b border-border pb-4">
              {isArabic ? movie.titleAr : movie.titleEn}
           </h2>
           
@@ -75,7 +75,7 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
             <div className="flex items-center gap-3">
               <MapPin className="h-5 w-5 text-gold" />
               <div>
-                <div className="font-medium text-white">{isArabic ? cinema.nameAr : cinema.nameEn}</div>
+                <div className="font-medium text-foreground">{isArabic ? cinema.nameAr : cinema.nameEn}</div>
                 <div className="text-xs">{isArabic ? hall.nameAr : hall.nameEn}</div>
               </div>
             </div>
@@ -83,28 +83,28 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-gold" />
               <div>
-                <div className="font-medium text-white">{formatDt(new Date(showtime.startTime), "EEEE, MMMM d, yyyy")}</div>
+                <div className="font-medium text-foreground">{formatDt(new Date(showtime.startTime), "EEEE, MMMM d, yyyy")}</div>
               </div>
             </div>
             
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 text-gold" />
               <div>
-                <div className="font-medium text-white">{formatDt(new Date(showtime.startTime), "h:mm a")}</div>
+                <div className="font-medium text-foreground">{formatDt(new Date(showtime.startTime), "h:mm a")}</div>
               </div>
             </div>
             
-            <div className="flex items-center gap-3 pt-2 border-t border-white/5">
+            <div className="flex items-center gap-3 pt-2 border-t border-border">
               <Ticket className="h-5 w-5 text-gold" />
               <div className="flex-1 flex justify-between items-center">
                 <div>
-                  <div className="font-medium text-white">{tickets.length} Tickets</div>
-                  <div className="text-xs text-white/70 mb-1">
+                  <div className="font-medium text-foreground">{tickets.length} Tickets</div>
+                  <div className="text-xs text-muted-foreground mb-1">
                     Seats: {tickets.map((t: any) => `${t.seat.row}${t.seat.column}`).join(", ")}
                   </div>
                   <div className="text-xs flex flex-col sm:flex-row sm:items-center mt-2 gap-1">
-                    <span className="text-white/70">Booking ID:</span> 
-                    <span className="font-mono text-gold break-all text-[10px] sm:text-xs bg-white/5 py-0.5 px-1.5 rounded select-all cursor-text">{booking.id.toUpperCase()}</span>
+                    <span className="text-muted-foreground">Booking ID:</span> 
+                    <span className="font-mono text-gold break-all text-[10px] sm:text-xs bg-foreground/5 py-0.5 px-1.5 rounded select-all cursor-text">{booking.id.toUpperCase()}</span>
                     <CopyBookingIdButton bookingId={booking.id} />
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default async function PaymentSuccessPage({ params }: { params: { booking
             </Button>
           </Link>
           <Link href="/">
-            <Button variant="outline" className="w-full sm:w-auto border-white/10">
+            <Button variant="outline" className="w-full sm:w-auto border-border">
               Return Home
             </Button>
           </Link>

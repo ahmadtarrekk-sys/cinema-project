@@ -11,7 +11,7 @@ export default function NotFound() {
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
       <div className="flex max-w-md flex-col items-center text-center animate-fade-in">
         <div className="relative mb-8">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cinema-surface ring-1 ring-white/10">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cinema-surface ring-1 ring-border">
             <Film className="h-10 w-10 text-gold/60" />
           </div>
           <div className="absolute -inset-4 -z-10 rounded-full bg-gold/5 blur-2xl" />
@@ -33,7 +33,7 @@ export default function NotFound() {
           <Link href="/">
             <Button
               variant="outline"
-              className="gap-2 border-white/10 hover:bg-white/5"
+              className="gap-2 border-border hover:bg-foreground/5"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               {t("back_home")}

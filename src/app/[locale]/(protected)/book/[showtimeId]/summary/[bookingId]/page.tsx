@@ -29,11 +29,11 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 mt-16">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-display font-medium text-white">Review Your Booking</h1>
+        <h1 className="text-3xl font-display font-medium text-foreground">Review Your Booking</h1>
         <p className="mt-2 text-muted-foreground">Almost there! Review your tickets below.</p>
       </div>
 
-      <div className="mb-8 relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+      <div className="mb-8 relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden border border-border shadow-2xl">
         <Image 
           src="/images/booking-bg.png" 
           alt="Cinematic theater view" 
@@ -49,10 +49,10 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-cinema-surface/50 overflow-hidden backdrop-blur-xl">
+      <div className="rounded-2xl border border-border bg-card/80 overflow-hidden backdrop-blur-xl">
         {/* Top Section: Movie Info */}
-        <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 bg-white/5 border-b border-white/10">
-          <div className="relative h-36 w-24 sm:h-48 sm:w-32 flex-shrink-0 overflow-hidden rounded-md border border-white/10 shadow-xl">
+        <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 bg-foreground/5 border-b border-border">
+          <div className="relative h-36 w-24 sm:h-48 sm:w-32 flex-shrink-0 overflow-hidden rounded-md border border-border shadow-xl">
             <Image
               src={movie.posterUrl}
               alt={isArabic ? movie.titleAr : movie.titleEn}
@@ -61,13 +61,13 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
             />
           </div>
           <div className="flex-1 flex flex-col justify-center">
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="text-2xl font-bold text-foreground">
               {isArabic ? movie.titleAr : movie.titleEn}
             </h2>
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-gold" />
-                <span className="font-medium text-white/80">
+                <span className="font-medium text-foreground/80">
                   {isArabic ? cinema.nameAr : cinema.nameEn}
                 </span>
                 <span className="mx-1">•</span>
@@ -86,23 +86,23 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
         </div>
 
         {/* Middle Section: Tickets */}
-        <div className="p-6 sm:p-8 border-b border-white/10">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="p-6 sm:p-8 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <TicketIcon className="h-5 w-5 text-gold" />
             Tickets ({tickets.length})
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {tickets.map((ticket: any) => (
-              <div key={ticket.id} className="flex justify-between items-center rounded-lg border border-white/10 bg-white/5 p-4">
+              <div key={ticket.id} className="flex justify-between items-center rounded-lg border border-border bg-foreground/5 p-4">
                 <div>
-                  <div className="text-sm font-semibold text-white">
+                  <div className="text-sm font-semibold text-foreground">
                     Row <span className="text-gold">{ticket.seat.row}</span> | Seat <span className="text-gold">{ticket.seat.column}</span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1 tracking-wider uppercase">
                     {ticket.seat.type}
                   </div>
                 </div>
-                <div className="font-medium text-white">
+                <div className="font-medium text-foreground">
                   EGP {ticket.price.toFixed(2)}
                 </div>
               </div>
@@ -111,13 +111,13 @@ export default async function BookingSummaryPage({ params }: BookingSummaryPageP
         </div>
 
         {/* Bottom Section: Total & Action */}
-        <div className="p-6 sm:p-8 bg-black/20 flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div className="p-6 sm:p-8 bg-foreground/5 flex flex-col sm:flex-row justify-between items-center gap-6">
           <div>
             <div className="text-sm text-muted-foreground mb-1">Total Amount</div>
             <div className="text-3xl font-bold text-gold">EGP {booking.totalAmount.toFixed(2)}</div>
           </div>
           <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4">
-            <Button variant="outline" className="w-full sm:w-auto border-white/10">
+            <Button variant="outline" className="w-full sm:w-auto border-border">
               Cancel
             </Button>
             <Link href={`/book/${showtime.id}/summary/${booking.id}/concessions`} className="w-full sm:w-auto">

@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { format as formatDt } from "date-fns";
 import { ConcessionDialog } from "@/components/admin/concession-dialog";
 import { DeleteConcessionButton } from "@/components/admin/delete-concession-button";
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 
 export default async function AdminConcessionsPage() {
   const concessions = await prisma.concessionItem.findMany({
@@ -37,7 +36,11 @@ export default async function AdminConcessionsPage() {
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 relative rounded-md overflow-hidden bg-zinc-900 flex-shrink-0">
                         {item.imageUrl && (
-                          <Image src={item.imageUrl} alt={item.nameEn} fill className="object-cover" />
+                          <SafeImage
+                            src={item.imageUrl}
+                            alt={item.nameEn}
+                            className="h-full w-full object-cover"
+                          />
                         )}
                       </div>
                       <div>

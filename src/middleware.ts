@@ -13,7 +13,7 @@ export default async function middleware(req: NextRequest) {
   const isProtectedPath = ["/profile", "/bookings", "/admin", "/book", "/scanner"].some(
     (path) =>
       pathname === path ||
-      pathname.startsWith(`${path}/`) ||
+      pathname.startsWith(`${path}/`) ||  
       routing.locales.some(
         (loc) =>
           pathname === `/${loc}${path}` ||

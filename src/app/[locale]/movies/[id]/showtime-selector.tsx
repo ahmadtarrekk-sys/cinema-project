@@ -66,9 +66,9 @@ export function ShowtimeSelector({ showtimes, isArabic }: ShowtimeSelectorProps)
 
   if (showtimes.length === 0) {
     return (
-      <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-cinema-surface py-24 text-center">
-        <Film className="h-12 w-12 text-white/20" />
-        <h3 className="mt-4 text-lg font-medium text-white">
+      <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-border bg-cinema-surface py-24 text-center">
+        <Film className="h-12 w-12 text-muted-foreground/30" />
+        <h3 className="mt-4 text-lg font-medium text-foreground">
           No showtimes currently available
         </h3>
         <p className="mt-2 text-muted-foreground">
@@ -118,7 +118,7 @@ export function ShowtimeSelector({ showtimes, isArabic }: ShowtimeSelectorProps)
                 className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all ${
                   isSelected
                     ? "bg-gold text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]"
-                    : "bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10 hover:text-white"
+                    : "bg-foreground/5 border border-border text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
                 }`}
               >
                 <CalendarIcon className="h-4 w-4" />
@@ -135,14 +135,14 @@ export function ShowtimeSelector({ showtimes, isArabic }: ShowtimeSelectorProps)
           cinemasWithShowtimes.map(({ cinema, showtimes: cShowtimes }) => (
             <div
               key={cinema.id}
-              className="rounded-2xl border border-white/5 bg-cinema-surface p-6 sm:p-8 transition-colors hover:border-white/10"
+              className="rounded-2xl border border-border bg-cinema-surface p-6 sm:p-8 transition-colors hover:border-gold/20"
             >
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
+              <div className="flex items-center gap-3 border-b border-border pb-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10 text-gold shadow-inner shadow-gold/20">
                   <MapPin className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-xl font-bold text-foreground">
                     {isArabic ? cinema.nameAr : cinema.nameEn}
                   </h3>
                   <p className="text-sm text-muted-foreground">
@@ -156,9 +156,9 @@ export function ShowtimeSelector({ showtimes, isArabic }: ShowtimeSelectorProps)
                   <Link key={st.id} href={`/book/${st.id}`} className="block">
                     <Button
                       variant="outline"
-                      className="h-16 w-full flex-col gap-1 border-white/10 hover:border-gold hover:bg-gold/10 hover:shadow-[0_0_15px_rgba(234,179,8,0.15)] transition-all relative overflow-hidden group"
+                      className="h-16 w-full flex-col gap-1 border-border hover:border-gold hover:bg-gold/10 hover:shadow-[0_0_15px_rgba(234,179,8,0.15)] transition-all relative overflow-hidden group"
                     >
-                      <span className="text-lg font-bold text-white group-hover:text-gold transition-colors">
+                      <span className="text-lg font-bold text-foreground group-hover:text-gold transition-colors">
                         {new Intl.DateTimeFormat("en", {
                           hour: "numeric",
                           minute: "2-digit",
@@ -175,7 +175,7 @@ export function ShowtimeSelector({ showtimes, isArabic }: ShowtimeSelectorProps)
             </div>
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-cinema-surface py-16 text-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-cinema-surface py-16 text-center">
             <p className="text-muted-foreground">
               No showtimes available for the selected date.
             </p>

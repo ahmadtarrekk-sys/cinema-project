@@ -83,7 +83,7 @@ export function Navbar() {
                   className={`gap-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-gold/10 text-gold hover:bg-gold/15 hover:text-gold"
-                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}
                 >
                   <link.icon className="h-4 w-4" />
@@ -112,7 +112,7 @@ export function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-48 glass-strong border-white/10"
+                className="w-48 glass-strong border-border"
               >
                 <Link href="/profile">
                   <DropdownMenuItem className="gap-2 cursor-pointer">
@@ -139,6 +139,7 @@ export function Navbar() {
                 )}
                 {user.role === "ADMIN" && (
                   <>
+                    <DropdownMenuSeparator />
                     <Link href="/admin">
                       <DropdownMenuItem className="gap-2 cursor-pointer">
                         <LayoutDashboard className="h-4 w-4" />
@@ -178,10 +179,10 @@ export function Navbar() {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle navigation</span>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 glass-strong border-white/10 p-0">
+            <SheetContent side="right" className="w-72 glass-strong border-border p-0">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex h-full flex-col">
-                <div className="flex items-center justify-between border-b border-white/5 px-4 py-4">
+                <div className="flex items-center justify-between border-b border-border px-4 py-4">
                   <Logo />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 p-4">
@@ -209,7 +210,7 @@ export function Navbar() {
                   })}
                 </div>
                 {user ? (
-                  <div className="border-t border-white/5 p-4 flex flex-col gap-1">
+                  <div className="border-t border-border p-4 flex flex-col gap-1">
                     <Link href="/profile" onClick={() => setMobileOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start gap-3 text-sm text-muted-foreground hover:text-foreground">
                         <User className="h-4 w-4" />
@@ -251,7 +252,7 @@ export function Navbar() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="border-t border-white/5 p-4">
+                  <div className="border-t border-border p-4">
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
                       <Button variant="ghost" className="mb-2 w-full text-sm">
                         {t("signin")}

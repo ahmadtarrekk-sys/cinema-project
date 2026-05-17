@@ -7,20 +7,34 @@ import { toast } from "sonner";
 import { createOrUpdateConcession } from "@/lib/actions/admin";
 import { Input } from "@/components/ui/input";
 
+const DEFAULT_FORM = {
+  nameEn: "",
+  nameAr: "",
+  descriptionEn: "",
+  descriptionAr: "",
+  price: 5.0,
+  imageUrl: "",
+  category: "SNACK",
+};
+
 export function ConcessionDialog({ item }: { item?: any }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const isEditing = !!item;
 
-  const [formData, setFormData] = useState({
-    nameEn: item?.nameEn || "",
-    nameAr: item?.nameAr || "",
-    descriptionEn: item?.descriptionEn || "",
-    descriptionAr: item?.descriptionAr || "",
-    price: item?.price || 5.0,
-    imageUrl: item?.imageUrl || "",
-    category: item?.category || "SNACK",
-  });
+  const initialForm = item
+    ? {
+        nameEn: item.nameEn || "",
+        nameAr: item.nameAr || "",
+        descriptionEn: item.descriptionEn || "",
+        descriptionAr: item.descriptionAr || "",
+        price: item.price ?? 5.0,
+        imageUrl: item.imageUrl || "",
+        category: item.category || "SNACK",
+      }
+    : DEFAULT_FORM;
+
+  const [formData, setFormData] = useState(initialForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,12 +44,33 @@ export function ConcessionDialog({ item }: { item?: any }) {
     e.preventDefault();
     setIsPending(true);
     try {
-      const payload = { ...formData };
-      if (isEditing) (payload as any).id = item.id;
+      // Build payload with proper types
+      const payload: any = {
+        nameEn: formData.nameEn.trim(),
+        nameAr: formData.nameAr.trim(),
+        descriptionEn: formData.descriptionEn.trim(),
+        descriptionAr: formData.descriptionAr.trim(),
+        price: typeof formData.price === "string" ? parseFloat(formData.price) : formData.price,
+        imageUrl: formData.imageUrl.trim() || null,
+        category: formData.category,
+      };
+
+      // Validate price
+      if (isNaN(payload.price) || payload.price <= 0) {
+        toast.error("Please enter a valid price.");
+        setIsPending(false);
+        return;
+      }
+
+      if (isEditing) payload.id = item.id;
       
       const res = await createOrUpdateConcession(payload);
       if (res.success) {
         toast.success(`Item ${isEditing ? "updated" : "added"} successfully.`);
+        // Reset form for new items
+        if (!isEditing) {
+          setFormData({ ...DEFAULT_FORM });
+        }
         setIsOpen(false);
       } else {
         toast.error(res.error || "Failed to save item.");
@@ -47,72 +82,82 @@ export function ConcessionDialog({ item }: { item?: any }) {
     }
   };
 
+  const handleOpen = () => {
+    // Reset form to initial values when opening
+    if (!isEditing) {
+      setFormData({ ...DEFAULT_FORM });
+    } else {
+      setFormData(initialForm);
+    }
+    setIsOpen(true);
+  };
+
   return (
     <>
       {isEditing ? (
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-white/70 hover:text-white hover:bg-white/10"
-          onClick={() => setIsOpen(true)}
+          className="text-muted-foreground hover:text-foreground hover:bg-foreground/10"
+          onClick={handleOpen}
         >
           <Edit2 className="h-4 w-4" />
         </Button>
       ) : (
-        <Button onClick={() => setIsOpen(true)} className="bg-gold text-black hover:bg-gold-light font-semibold">
+        <Button onClick={handleOpen} className="bg-gold text-black hover:bg-gold-light font-semibold">
           <Plus className="h-4 w-4 mr-2" /> Add Item
         </Button>
       )}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-cinema-surface border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/50 sticky top-0 z-10">
-              <h2 className="text-xl font-bold text-white">{isEditing ? "Edit Item" : "Add Item"}</h2>
+          <div className="bg-cinema-surface border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border flex justify-between items-center bg-background/80 sticky top-0 z-10">
+              <h2 className="text-xl font-bold text-foreground">{isEditing ? "Edit Item" : "Add Item"}</h2>
               <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>Close</Button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">English Name</label>
-                  <Input name="nameEn" value={formData.nameEn} onChange={handleChange} required className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">English Name</label>
+                  <Input name="nameEn" value={formData.nameEn} onChange={handleChange} required className="bg-foreground/5 border-border" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Arabic Name</label>
-                  <Input name="nameAr" value={formData.nameAr} onChange={handleChange} required className="bg-white/5 border-white/10" dir="rtl" />
+                  <label className="text-sm font-medium text-foreground">Arabic Name</label>
+                  <Input name="nameAr" value={formData.nameAr} onChange={handleChange} required className="bg-foreground/5 border-border" dir="rtl" />
                 </div>
                 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-white">English Description</label>
+                  <label className="text-sm font-medium text-foreground">English Description</label>
                   <textarea 
                     name="descriptionEn" 
                     value={formData.descriptionEn} 
                     onChange={handleChange} 
                     required 
-                    className="w-full bg-white/5 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[80px]" 
+                    className="w-full bg-foreground/5 border border-border rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[80px]" 
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-white">Arabic Description</label>
+                  <label className="text-sm font-medium text-foreground">Arabic Description</label>
                   <textarea 
                     name="descriptionAr" 
                     value={formData.descriptionAr} 
                     onChange={handleChange} 
                     required 
                     dir="rtl"
-                    className="w-full bg-white/5 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[80px]" 
+                    className="w-full bg-foreground/5 border border-border rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[80px]" 
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Category</label>
+                  <label className="text-sm font-medium text-foreground">Category</label>
                   <select 
                     name="category" 
                     value={formData.category} 
                     onChange={handleChange} 
                     required 
-                    className="w-full bg-white/5 border border-white/10 rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-white [&>option]:bg-zinc-900"
+                    className="w-full bg-foreground/5 border border-border rounded-md p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold appearance-none text-foreground [&>option]:bg-muted"
                   >
                     <option value="SNACK">Snack</option>
                     <option value="DRINK">Drink</option>
@@ -120,18 +165,27 @@ export function ConcessionDialog({ item }: { item?: any }) {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Price (EGP)</label>
-                  <Input type="number" step="0.01" name="price" value={formData.price} onChange={handleChange} required className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">Price (EGP)</label>
+                  <Input type="number" step="0.01" min="0.01" name="price" value={formData.price} onChange={handleChange} required className="bg-foreground/5 border-border" />
                 </div>
                 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-white">Image URL</label>
-                  <Input name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">Image URL</label>
+                  <Input 
+                    name="imageUrl" 
+                    value={formData.imageUrl} 
+                    onChange={handleChange} 
+                    placeholder="https://images.unsplash.com/..."
+                    className="bg-foreground/5 border-border" 
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Use a direct image URL (ending in .jpg, .png, .webp). Pinterest links or page URLs won&apos;t work.
+                  </p>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-white/10 flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-white/10">
+              <div className="pt-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border">
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isPending} className="bg-gold text-black hover:bg-gold-light">

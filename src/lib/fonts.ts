@@ -1,6 +1,7 @@
 import { Playfair_Display, DM_Sans, JetBrains_Mono, Cairo } from "next/font/google";
 
 export const fontDisplay = Playfair_Display({
+  
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",

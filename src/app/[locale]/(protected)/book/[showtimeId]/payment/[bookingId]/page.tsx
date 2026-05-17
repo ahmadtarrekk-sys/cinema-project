@@ -31,17 +31,20 @@ export default async function PaymentPage({ params }: { params: { bookingId: str
   const stripeEnabled = !!process.env.STRIPE_SECRET_KEY;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 mt-16">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-display font-medium text-white">Complete Payment</h1>
-        <p className="mt-2 text-muted-foreground">Securely process your booking.</p>
-      </div>
+    <div className="relative min-h-screen bg-payment bg-blend-overlay bg-background/80">
+      <div className="absolute inset-0 overlay-scrim pointer-events-none" />
+      <div className="relative mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 mt-16">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-display font-medium text-foreground">Complete Payment</h1>
+          <p className="mt-2 text-muted-foreground">Securely process your booking.</p>
+        </div>
 
-      <PaymentClient 
-        booking={booking} 
-        isArabic={isArabic} 
-        stripeEnabled={stripeEnabled}
-      />
+        <PaymentClient 
+          booking={booking} 
+          isArabic={isArabic} 
+          stripeEnabled={stripeEnabled}
+        />
+      </div>
     </div>
   );
 }

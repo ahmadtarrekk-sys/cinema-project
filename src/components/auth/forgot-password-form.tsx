@@ -63,7 +63,7 @@ export function ForgotPasswordForm() {
                 <Input 
                   placeholder="name@example.com" 
                   {...field} 
-                  className="bg-zinc-900 border-white/10 text-white placeholder:text-zinc-500" 
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground" 
                 />
               </FormControl>
               <FormMessage />

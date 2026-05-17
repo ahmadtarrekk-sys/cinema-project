@@ -15,6 +15,25 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
   const locale = await getLocale();
   const isArabic = locale === "ar";
 
+  const CURATED_FALLBACKS = [
+    "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1470229722913-7c092b19e735?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1507676184212-d0330a156f97?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1604014237800-1c9102c219da?q=80&w=1920&auto=format&fit=crop"
+  ];
+
+  const getFallbackImage = (cid: string) => {
+    let hash = 0;
+    for (let i = 0; i < cid.length; i++) {
+      hash = cid.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % CURATED_FALLBACKS.length;
+    return CURATED_FALLBACKS[index];
+  };
+
   const cinema = await prisma.cinema.findUnique({
     where: { id },
     include: { halls: true },
@@ -50,8 +69,15 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
   return (
     <div className="min-h-screen pb-24">
       {/* Hero Backdrop */}
-      <div className="relative h-[40vh] min-h-[300px] w-full bg-zinc-950">
-        <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-800" />
+      <div className="relative h-[40vh] min-h-[300px] w-full bg-muted overflow-hidden">
+        <Image 
+          src={cinema.imageUrl || getFallbackImage(cinema.id)}
+          alt={title}
+          fill
+          className="object-cover opacity-60"
+          priority
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
       </div>
 
@@ -62,10 +88,10 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
               <MapPin className="h-4 w-4 text-gold" />
               <span className="text-sm font-medium text-gold">{cinema.location}</span>
             </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+            <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
               {title}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-zinc-300">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
               {cinema.halls.length} Halls • Premium Seating
             </p>
           </div>
@@ -73,7 +99,7 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
 
         {/* Showtimes Section */}
         <div className="mt-16">
-          <h2 className="font-display text-3xl font-bold text-white border-b border-white/10 pb-4">
+          <h2 className="font-display text-3xl font-bold text-foreground border-b border-border pb-4">
             Now Showing
           </h2>
           <div className="mt-8 space-y-8">
@@ -81,9 +107,9 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
               moviesWithShowtimes.map(({ movie, showtimes }) => (
                 <div
                   key={movie.id}
-                  className="rounded-2xl border border-white/5 bg-cinema-surface p-6 sm:p-8 flex flex-col md:flex-row gap-8"
+                  className="rounded-2xl border border-border bg-cinema-surface p-6 sm:p-8 flex flex-col md:flex-row gap-8"
                 >
-                  <div className="w-32 shrink-0 md:w-40 relative aspect-[2/3] overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-xl">
+                  <div className="w-32 shrink-0 md:w-40 relative aspect-[2/3] overflow-hidden rounded-xl border border-border bg-muted shadow-xl">
                     {movie.posterUrl ? (
                       <Image
                         src={movie.posterUrl}
@@ -93,14 +119,14 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
-                        <Film className="h-8 w-8 text-white/20" />
+                        <Film className="h-8 w-8 text-muted-foreground/30" />
                       </div>
                     )}
                   </div>
 
                   <div className="flex-1">
                     <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-white">
+                      <h3 className="text-2xl font-bold text-foreground">
                         {isArabic ? movie.titleAr : movie.titleEn}
                       </h3>
                       {movie.genre && (
@@ -115,9 +141,9 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
                         <Link key={st.id} href={`/book/${st.id}`} className="block">
                           <Button
                             variant="outline"
-                            className="h-14 w-full flex-col gap-0.5 border-white/10 hover:border-gold hover:bg-gold/10"
+                            className="h-14 w-full flex-col gap-0.5 border-border hover:border-gold hover:bg-gold/10"
                           >
-                            <span className="text-base font-semibold text-white">
+                            <span className="text-base font-semibold text-foreground">
                               {new Intl.DateTimeFormat("en", {
                                 hour: "numeric",
                                 minute: "2-digit",
@@ -134,9 +160,9 @@ export default async function CinemaDetailsPage({ params }: CinemaPageProps) {
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-cinema-surface py-24 text-center">
-                <Film className="h-12 w-12 text-white/20" />
-                <h3 className="mt-4 text-lg font-medium text-white">
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-cinema-surface py-24 text-center">
+                <Film className="h-12 w-12 text-muted-foreground/30" />
+                <h3 className="mt-4 text-lg font-medium text-foreground">
                   No showtimes currently available
                 </h3>
                 <p className="mt-2 text-muted-foreground">

@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "@/i18n/routing"
-import Image from "next/image"
 import { Plus, Minus, Loader2, Popcorn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -77,18 +76,26 @@ export function ConcessionsClient({
             const desc = isArabic ? item.descriptionAr : item.descriptionEn
 
             return (
-              <div key={item.id} className="flex flex-col rounded-xl border border-white/10 bg-cinema-surface/50 overflow-hidden backdrop-blur-xl transition hover:border-gold/30">
-                <div className="relative h-40 w-full bg-zinc-900 border-b border-white/10">
+              <div key={item.id} className="flex flex-col rounded-xl border border-border bg-card/80 overflow-hidden backdrop-blur-xl transition hover:border-gold/30">
+                <div className="relative h-40 w-full bg-muted border-b border-border">
                   {item.imageUrl ? (
-                    <Image src={item.imageUrl} alt={name} fill className="object-cover opacity-80" />
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={item.imageUrl}
+                      alt={name}
+                      className="h-full w-full object-cover opacity-80"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <Popcorn className="h-12 w-12 text-white/20" />
+                      <Popcorn className="h-12 w-12 text-muted-foreground/30" />
                     </div>
                   )}
                 </div>
                 <div className="flex flex-1 flex-col p-4">
-                  <h3 className="font-bold text-white text-lg">{name}</h3>
+                  <h3 className="font-bold text-foreground text-lg">{name}</h3>
                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{desc}</p>
                   
                   <div className="mt-4 flex flex-1 items-end justify-between">
@@ -97,7 +104,7 @@ export function ConcessionsClient({
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-full border-white/20 text-white hover:bg-white/10"
+                        className="h-8 w-8 rounded-full border-border text-foreground hover:bg-foreground/10"
                         onClick={() => handleUpdateQuantity(item.id, -1)}
                         disabled={qty === 0}
                       >
@@ -107,7 +114,7 @@ export function ConcessionsClient({
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-full border-white/20 text-white hover:bg-white/10"
+                        className="h-8 w-8 rounded-full border-border text-foreground hover:bg-foreground/10"
                         onClick={() => handleUpdateQuantity(item.id, 1)}
                       >
                          <Plus className="h-3 w-3" />
@@ -122,18 +129,18 @@ export function ConcessionsClient({
       </div>
 
       <div className="lg:col-span-1">
-        <div className="sticky top-24 rounded-2xl border border-white/10 bg-cinema-surface/50 p-6 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-white mb-6">Order Summary</h3>
+        <div className="sticky top-24 rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
+          <h3 className="text-lg font-bold text-foreground mb-6">Order Summary</h3>
           
           <div className="space-y-4 text-sm text-muted-foreground">
             <div className="flex justify-between">
               <span>Tickets & Fees</span>
-              <span className="text-white">EGP {baseTotal.toFixed(2)}</span>
+              <span className="text-foreground">EGP {baseTotal.toFixed(2)}</span>
             </div>
             
             {items.filter(item => (quantities[item.id] || 0) > 0).length > 0 && (
-              <div className="border-t border-white/10 pt-4 space-y-3">
-                <p className="font-medium text-white/80">Concessions</p>
+              <div className="border-t border-border pt-4 space-y-3">
+                <p className="font-medium text-foreground/80">Concessions</p>
                 {items.map(item => {
                   const qty = quantities[item.id] || 0
                   if (qty === 0) return null
@@ -147,7 +154,7 @@ export function ConcessionsClient({
               </div>
             )}
             
-            <div className="flex justify-between border-t border-white/10 pt-4 font-bold text-lg text-white">
+            <div className="flex justify-between border-t border-border pt-4 font-bold text-lg text-foreground">
               <span>Final Total</span>
               <span className="text-gold">EGP {finalTotal.toFixed(2)}</span>
             </div>

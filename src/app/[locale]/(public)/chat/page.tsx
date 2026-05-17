@@ -5,11 +5,11 @@ export default async function ChatPage() {
   const t = await getTranslations("Navigation");
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 bg-chat rounded-2xl border border-white/5 my-8">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 bg-chat rounded-2xl border border-border my-8">
       <div className="h-20 w-20 bg-gold/10 rounded-full flex items-center justify-center mb-6">
         <BotMessageSquare className="h-10 w-10 text-gold" />
       </div>
-      <h1 className="text-3xl font-display font-bold text-white mb-4">
+      <h1 className="text-3xl font-display font-bold text-foreground mb-4">
         Starlight AI Assistant
       </h1>
       <p className="text-muted-foreground max-w-lg mb-8">

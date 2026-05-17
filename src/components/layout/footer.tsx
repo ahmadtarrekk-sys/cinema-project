@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Film } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export function Footer() {
   const t = useTranslations("Footer");
@@ -26,19 +26,14 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-t border-white/5 bg-cinema-bg">
+    <footer className="border-t border-border bg-cinema-bg">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
-            <Link href="/" className="mb-4 inline-flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold/10">
-                <Film className="h-4 w-4 text-gold" />
-              </div>
-              <span className="font-display text-lg font-semibold text-gradient-gold">
-                LUMIÈRE
-              </span>
-            </Link>
+            <div className="mb-4 inline-flex items-center">
+              <Logo />
+            </div>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
               {t("brand_desc")}
             </p>
@@ -67,7 +62,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 sm:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} {t("rights")}
           </p>

@@ -38,7 +38,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="relative min-h-screen bg-profile bg-blend-overlay bg-background/80">
-      <div className="absolute inset-0 bg-background/50 pointer-events-none" />
+      <div className="absolute inset-0 overlay-scrim pointer-events-none" />
       <div className="relative mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mb-12">
           <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -49,19 +49,19 @@ export default async function ProfilePage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/5 bg-cinema-surface/50 p-6 backdrop-blur-xl sm:p-8 mb-8">
+        <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl sm:p-8 mb-8">
           <div className="flex items-center gap-6">
             <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gold/10 text-3xl font-bold text-gold ring-1 ring-gold/20">
               {session.user.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">{session.user.name}</h2>
+              <h2 className="text-2xl font-bold text-foreground">{session.user.name}</h2>
               <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <Mail className="h-4 w-4" />
                   {session.user.email}
                 </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-white ring-1 ring-white/10">
+                <div className="flex items-center gap-1.5 rounded-full bg-foreground/5 px-2.5 py-0.5 text-xs font-medium text-foreground ring-1 ring-border">
                   {session.user.role === "ADMIN" ? "Admin" : "Member"}
                 </div>
               </div>
@@ -70,15 +70,15 @@ export default async function ProfilePage() {
         </div>
 
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
             <Calendar className="h-6 w-6 text-gold" />
             My Bookings
           </h2>
 
           {bookings.length === 0 ? (
-            <div className="rounded-2xl border border-white/5 bg-cinema-surface/50 p-12 text-center backdrop-blur-xl">
+            <div className="rounded-2xl border border-border bg-card/80 p-12 text-center backdrop-blur-xl">
               <Ticket className="h-12 w-12 text-gold/50 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white">No active bookings</h3>
+              <h3 className="text-lg font-medium text-foreground">No active bookings</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 You haven&apos;t booked any movies yet. Your history will appear here.
               </p>
@@ -99,7 +99,7 @@ export default async function ProfilePage() {
                 const canCancel = !isPast && (new Date(showtime.startTime).getTime() - Date.now() > 2 * 60 * 60 * 1000);
 
                 return (
-                  <div key={booking.id} className="rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6 flex flex-col sm:flex-row gap-6">
+                  <div key={booking.id} className="rounded-xl border border-border bg-card/80 p-4 sm:p-6 flex flex-col sm:flex-row gap-6">
                     <div className="w-24 h-36 flex-shrink-0 relative overflow-hidden rounded-md bg-zinc-900">
                       {movie.posterUrl && (
                         <Image src={movie.posterUrl} alt={movie.titleEn} fill className="object-cover" />
@@ -108,7 +108,7 @@ export default async function ProfilePage() {
                     <div className="flex-1 flex flex-col">
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h3 className="text-xl font-bold text-white">{isArabic ? movie.titleAr : movie.titleEn}</h3>
+                          <h3 className="text-xl font-bold text-foreground">{isArabic ? movie.titleAr : movie.titleEn}</h3>
                           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4 text-gold" />
                             <span>{isArabic ? hall.cinema.nameAr : hall.cinema.nameEn} • {isArabic ? hall.nameAr : hall.nameEn}</span>
@@ -124,28 +124,28 @@ export default async function ProfilePage() {
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                      <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-4">
                         <div>
-                          <div className="text-sm font-medium text-white mb-1">{tickets.length} Tickets</div>
+                          <div className="text-sm font-medium text-foreground mb-1">{tickets.length} Tickets</div>
                           <div className="text-xs text-muted-foreground">
                             Seats: {tickets.map(t => `${t.seat.row}${t.seat.column}`).join(", ")}
                           </div>
                           <div className="text-xs text-muted-foreground mt-0.5 flex flex-col sm:flex-row sm:items-center items-start gap-1">
                             <span>Booking ID:</span> 
-                            <span className="font-mono text-gold break-all text-[10px] sm:text-xs bg-white/5 py-0.5 px-1.5 rounded select-all cursor-text">{booking.id.toUpperCase()}</span>
+                            <span className="font-mono text-gold break-all text-[10px] sm:text-xs bg-foreground/5 py-0.5 px-1.5 rounded select-all cursor-text">{booking.id.toUpperCase()}</span>
                             <CopyBookingIdButton bookingId={booking.id} />
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3">
                           {isPast ? (
-                            <span className="px-3 py-1 rounded-full bg-white/5 text-muted-foreground text-xs font-medium border border-white/10">
+                            <span className="px-3 py-1 rounded-full bg-foreground/5 text-muted-foreground text-xs font-medium border border-border">
                               Past Show
                             </span>
                           ) : (
                             <>
                               <Link href={`/book/${showtime.id}/payment/${booking.id}/success`}>
-                                 <Button variant="outline" size="sm" className="border-white/10 hover:bg-white/5">
+                                 <Button variant="outline" size="sm" className="border-border hover:bg-foreground/5">
                                    View Ticket
                                  </Button>
                               </Link>

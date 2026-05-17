@@ -17,7 +17,7 @@ export default function PaymentCancelPage({ params }: { params: { showtimeId: st
           </div>
         </div>
         
-        <h1 className="font-display text-4xl font-bold tracking-tight text-white mb-2">
+        <h1 className="font-display text-4xl font-bold tracking-tight text-foreground mb-2">
           Payment Cancelled
         </h1>
         <p className="text-muted-foreground mb-8">
@@ -26,7 +26,7 @@ export default function PaymentCancelPage({ params }: { params: { showtimeId: st
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link href="/">
-            <Button variant="outline" className="w-full sm:w-auto border-white/10">
+            <Button variant="outline" className="w-full sm:w-auto border-border">
               Return Home
             </Button>
           </Link>

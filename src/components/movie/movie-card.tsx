@@ -24,7 +24,7 @@ export function MovieCard({ movie, showBookButton = true }: MovieCardProps) {
     : null;
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/5 bg-cinema-surface transition-all duration-300 hover:border-gold/30 hover:shadow-[0_0_30px_-5px_oklch(0.82_0.12_75/0.2)]">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-cinema-surface transition-all duration-300 hover:border-gold/30 hover:shadow-[0_0_30px_-5px_oklch(0.82_0.12_75/0.2)] card-interactive">
       {/* Poster Container */}
       <Link href={`/movies/${movie.id}`} className="relative aspect-[2/3] w-full overflow-hidden block bg-muted/20">
         {movie.posterUrl ? (
@@ -36,7 +36,7 @@ export function MovieCard({ movie, showBookButton = true }: MovieCardProps) {
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
             <Film className="h-12 w-12 text-muted-foreground/30" />
           </div>
         )}
@@ -47,7 +47,7 @@ export function MovieCard({ movie, showBookButton = true }: MovieCardProps) {
         {/* Top Badges */}
         <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2">
           {movie.genre && (
-            <Badge variant="secondary" className="bg-black/50 backdrop-blur-md border-white/10 text-xs">
+            <Badge variant="secondary" className="bg-black/50 backdrop-blur-md border-border text-xs">
               {movie.genre}
             </Badge>
           )}
@@ -88,10 +88,10 @@ export function MovieCard({ movie, showBookButton = true }: MovieCardProps) {
         <div className="flex-1" />
 
         {showBookButton && (
-          <div className="mt-4 pt-4 border-t border-white/5">
+          <div className="mt-4 pt-4 border-t border-border">
             <Link href={`/movies/${movie.id}?booking=true`} className="w-full block">
               <Button 
-                className="w-full bg-white/5 hover:bg-gold hover:text-black hover:scale-[1.02] transition-all border border-white/10 group-hover:border-gold/30"
+                className="w-full bg-foreground/5 hover:bg-gold hover:text-black hover:scale-[1.02] transition-all border border-border group-hover:border-gold/30 btn-glow"
                 variant="secondary"
               >
                 {t("book")}

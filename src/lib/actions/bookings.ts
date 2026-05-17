@@ -2,9 +2,11 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { getSocket, initSocket } from "@/lib/socket";
 
-export async function createBookingDraft(data: {
+/** Maximum seats a user can select in a single booking */
+const MAX_SEATS_PER_BOOKING = 5;
+
+export async function createBooking(data: {
   showtimeId: string;
   seatIds: string[];
   totalAmount: number;
@@ -15,21 +17,30 @@ export async function createBookingDraft(data: {
       return { success: false, error: "Unauthorized" };
     }
 
+    // ── Validate seat count ──
+    if (data.seatIds.length === 0) {
+      return { success: false, error: "No seats selected." };
+    }
+    if (data.seatIds.length > MAX_SEATS_PER_BOOKING) {
+      return { success: false, error: `You can select up to ${MAX_SEATS_PER_BOOKING} seats per booking.` };
+    }
+
     const userExists = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!userExists) {
       return { success: false, error: "Session invalid. Please log out and log back in." };
     }
 
-    // 1. Double check that seats are not already booked for this showtime
+    // 1. Double check that seats are not already CONFIRMED by another booking
     const existingTickets = await prisma.ticket.findMany({
       where: {
         showtimeId: data.showtimeId,
-        seatId: { in: data.seatIds }
+        seatId: { in: data.seatIds },
+        booking: { status: "CONFIRMED" }
       }
     });
 
     if (existingTickets.length > 0) {
-      return { success: false, error: "One or more seats are already booked." };
+      return { success: false, error: "One or more seats are already booked permanently." };
     }
 
     // 1.5. Verify that the user currently holds the lock for all requested seats in MongoDB
@@ -55,18 +66,35 @@ export async function createBookingDraft(data: {
     if (!showtime) return { success: false, error: "Showtime not found" };
 
     const seatsToBook = showtime.hall.seats.filter(s => data.seatIds.includes(s.id));
+
+    // All bookings start as DRAFT until payment is completed
     
     // 3. Create the booking and its tickets in a transaction
     const booking = await prisma.$transaction(async (tx) => {
-      // Create helper to get seat tier
-      const FIRST_PREMIUM_ROWS = 3;
-      const hallRows = Array.from(new Set(showtime.hall.seats.map(s => s.row))).sort();
-      
+      // Clean up stale DRAFT/CANCELLED tickets for these seats to avoid unique constraint violation
+      await tx.ticket.deleteMany({
+        where: {
+          showtimeId: data.showtimeId,
+          seatId: { in: data.seatIds },
+          booking: { status: { in: ["DRAFT", "CANCELLED"] } }
+        }
+      });
+
+      // Also clean up the orphaned DRAFT/CANCELLED bookings for this user on this showtime
+      await tx.booking.deleteMany({
+        where: {
+          userId: session.user.id,
+          showtimeId: data.showtimeId,
+          status: { in: ["DRAFT", "CANCELLED"] },
+          tickets: { none: {} } // Only delete bookings with no remaining tickets
+        }
+      });
+
       const b = await tx.booking.create({
         data: {
           userId: session.user.id,
           showtimeId: data.showtimeId,
-          totalAmount: data.totalAmount, // Assuming the client sends the correct total including fees for now. Re-calculating tickets below.
+          totalAmount: data.totalAmount,
           status: "DRAFT",
           tickets: {
             create: seatsToBook.map(seat => {
@@ -78,7 +106,7 @@ export async function createBookingDraft(data: {
                 tier = "Premium";
               }
 
-              // Calculate price based on tier (hardcoded as requested)
+              // Calculate price based on tier
               let price = 180;
               if (tier === "VIP") price = 350;
               if (tier === "Premium") price = 250;
@@ -93,18 +121,13 @@ export async function createBookingDraft(data: {
         }
       });
       
-      // After successful creation of DRAFT, wipe the soft holds
-      await tx.seatHold.deleteMany({
-         where: { showtimeId: data.showtimeId, seatId: { in: data.seatIds } }
-      });
-
       return b;
     });
 
     return { success: true, bookingId: booking.id };
   } catch (error) {
-    console.error("Failed to create booking draft:", error);
-    return { success: false, error: "Failed to create booking draft" };
+    console.error("Failed to create booking:", error);
+    return { success: false, error: "Failed to create booking" };
   }
 }
 

@@ -36,11 +36,17 @@ export async function POST(req: Request) {
 
     if (bookingId) {
       try {
-        await prisma.booking.update({
+        const booking = await prisma.booking.update({
           where: { id: bookingId },
           data: { status: "CONFIRMED" },
+          include: { tickets: true }
         });
         
+        const seatIds = booking.tickets.map((t: any) => t.seatId);
+        await prisma.seatHold.deleteMany({
+          where: { showtimeId: booking.showtimeId, seatId: { in: seatIds } }
+        });
+
         // At this point we can also create records for payments via prisma, or emit an email success
         console.log(`Booking ${bookingId} confirmed via Stripe.`);
       } catch (err) {

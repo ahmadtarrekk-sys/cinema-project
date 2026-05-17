@@ -17,6 +17,7 @@ export function CinemaDialog({ cinema }: { cinema?: any }) {
     nameAr: cinema?.nameAr || "",
     location: cinema?.location || "",
     contact: cinema?.contact || "",
+    imageUrl: cinema?.imageUrl || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +51,7 @@ export function CinemaDialog({ cinema }: { cinema?: any }) {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-white/70 hover:text-white hover:bg-white/10"
+          className="text-muted-foreground hover:text-foreground hover:bg-foreground/10"
           onClick={() => setIsOpen(true)}
         >
           <Edit2 className="h-4 w-4" />
@@ -63,34 +64,39 @@ export function CinemaDialog({ cinema }: { cinema?: any }) {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-cinema-surface border border-white/10 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/50 sticky top-0 z-10">
-              <h2 className="text-xl font-bold text-white">{isEditing ? "Edit Cinema" : "Add Cinema"}</h2>
+          <div className="bg-cinema-surface border border-border rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border flex justify-between items-center bg-background/80 sticky top-0 z-10">
+              <h2 className="text-xl font-bold text-foreground">{isEditing ? "Edit Cinema" : "Add Cinema"}</h2>
               <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>Close</Button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">English Name</label>
-                  <Input name="nameEn" value={formData.nameEn} onChange={handleChange} required className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">English Name</label>
+                  <Input name="nameEn" value={formData.nameEn} onChange={handleChange} required className="bg-foreground/5 border-border" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Arabic Name</label>
-                  <Input name="nameAr" value={formData.nameAr} onChange={handleChange} required className="bg-white/5 border-white/10" dir="rtl" />
+                  <label className="text-sm font-medium text-foreground">Arabic Name</label>
+                  <Input name="nameAr" value={formData.nameAr} onChange={handleChange} required className="bg-foreground/5 border-border" dir="rtl" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Location Address</label>
-                  <Input name="location" value={formData.location} onChange={handleChange} required className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">Location Address</label>
+                  <Input name="location" value={formData.location} onChange={handleChange} required className="bg-foreground/5 border-border" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Contact (Optional)</label>
-                  <Input name="contact" value={formData.contact} onChange={handleChange} className="bg-white/5 border-white/10" />
+                  <label className="text-sm font-medium text-foreground">Contact (Optional)</label>
+                  <Input name="contact" value={formData.contact} onChange={handleChange} className="bg-foreground/5 border-border" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Image URL (Optional)</label>
+                  <Input name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="bg-foreground/5 border-border" placeholder="https://images.unsplash.com/photo-..." />
+                  <p className="text-xs text-muted-foreground">High-quality image of the cinema building or interior.</p>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-white/10 flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-white/10">
+              <div className="pt-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border">
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isPending} className="bg-gold text-black hover:bg-gold-light">

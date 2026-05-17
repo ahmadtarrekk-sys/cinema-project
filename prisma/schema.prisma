@@ -71,6 +71,7 @@ model Cinema {
   nameAr   String
   location String
   contact  String?
+  imageUrl String?
   halls    Hall[]
 
   createdAt DateTime @default(now())
@@ -142,6 +143,8 @@ model Showtime {
   hall      Hall      @relation(fields: [hallId], references: [id], onDelete: Cascade)
   bookings  Booking[]
   tickets   Ticket[]
+
+  @@index([startTime])
 }
 
 model Booking {

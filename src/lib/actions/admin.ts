@@ -76,6 +76,13 @@ export async function createOrUpdateCinema(data: any) {
     await ensureAdmin();
     const { id, ...cinemaData } = data;
     
+    // Sanitize imageUrl
+    if (!cinemaData.imageUrl || cinemaData.imageUrl.trim() === '') {
+      cinemaData.imageUrl = null;
+    } else {
+      cinemaData.imageUrl = cinemaData.imageUrl.trim();
+    }
+    
     if (id) {
       await prisma.cinema.update({ where: { id }, data: cinemaData });
     } else {
@@ -212,8 +219,19 @@ export async function createOrUpdateConcession(data: any) {
     await ensureAdmin();
     const { id, ...concessionData } = data;
     
+    // Ensure price is a valid number
     if (typeof concessionData.price === 'string') {
-        concessionData.price = parseFloat(concessionData.price);
+      concessionData.price = parseFloat(concessionData.price);
+    }
+    if (isNaN(concessionData.price) || concessionData.price <= 0) {
+      return { success: false, error: "Invalid price value." };
+    }
+    
+    // Sanitize imageUrl — store null instead of empty string for optional field
+    if (!concessionData.imageUrl || concessionData.imageUrl.trim() === '') {
+      concessionData.imageUrl = null;
+    } else {
+      concessionData.imageUrl = concessionData.imageUrl.trim();
     }
     
     if (id) {
@@ -225,6 +243,8 @@ export async function createOrUpdateConcession(data: any) {
     revalidatePath("/admin/concessions");
     return { success: true };
   } catch (err: any) {
+    console.error("createOrUpdateConcession error:", err);
     return { success: false, error: err.message };
   }
 }
+

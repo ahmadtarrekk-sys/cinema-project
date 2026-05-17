@@ -114,7 +114,7 @@
   }
 }
 
-/* ── Dark-first Cinema Palette ───────────────────────────── */
+/* ── Dark-Only Cinema Palette ────────────────────────────── */
 :root {
   --background: oklch(0.08 0.01 260);
   --foreground: oklch(0.95 0.01 80);
@@ -132,7 +132,7 @@
   --secondary-foreground: oklch(0.88 0.02 80);
 
   --muted: oklch(0.16 0.01 260);
-  --muted-foreground: oklch(0.6 0.02 260);
+  --muted-foreground: oklch(0.65 0.02 260);
 
   --accent: oklch(0.2 0.02 260);
   --accent-foreground: oklch(0.95 0.01 80);
@@ -168,11 +168,16 @@
   --sidebar-accent-foreground: oklch(0.88 0.02 80);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.82 0.12 75);
-}
 
-/* The app is dark-first, so .dark inherits root */
-.dark {
-  /* Already dark by default */
+  /* Utility tokens */
+  --glass-bg: oklch(0.12 0.01 260 / 60%);
+  --glass-strong-bg: oklch(0.12 0.01 260 / 80%);
+  --glass-border: oklch(1 0 0 / 6%);
+  --glass-strong-border: oklch(1 0 0 / 10%);
+  --scrollbar-thumb: oklch(0.3 0.01 260);
+  --scrollbar-thumb-hover: oklch(0.4 0.01 260);
+  --selection-bg: oklch(0.82 0.12 75 / 25%);
+  --selection-color: oklch(0.95 0.01 80);
 }
 
 /* ── Base Layer ──────────────────────────────────────────── */
@@ -186,11 +191,27 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    font-weight: 400;
   }
 
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+  }
+
+  /* Typography system */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  h1 { letter-spacing: -0.04em; }
+  h2 { letter-spacing: -0.03em; }
+
+  p {
+    line-height: 1.7;
   }
 
   /* Custom scrollbar */
@@ -202,47 +223,143 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(0.3 0.01 260);
+    background: var(--scrollbar-thumb);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.4 0.01 260);
+    background: var(--scrollbar-thumb-hover);
   }
 
   ::selection {
-    background: oklch(0.82 0.12 75 / 25%);
-    color: oklch(0.95 0.01 80);
+    background: var(--selection-bg);
+    color: var(--selection-color);
   }
 }
 
 /* ── Utility Layer ───────────────────────────────────────── */
 @layer utilities {
   .glass {
-    background: oklch(0.12 0.01 260 / 60%);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(1.2);
-    border: 1px solid oklch(1 0 0 / 6%);
+    border: 1px solid var(--glass-border);
   }
 
   .glass-strong {
-    background: oklch(0.12 0.01 260 / 80%);
+    background: var(--glass-strong-bg);
     backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid oklch(1 0 0 / 10%);
+    border: 1px solid var(--glass-strong-border);
   }
 
   .glow-gold {
-    box-shadow: 0 0 20px oklch(0.82 0.12 75 / 15%),
-                0 0 60px oklch(0.82 0.12 75 / 5%);
+    box-shadow: 0 0 20px var(--cinema-glow),
+                0 0 60px var(--cinema-glow);
   }
 
   .glow-gold-sm {
-    box-shadow: 0 0 10px oklch(0.82 0.12 75 / 10%);
+    box-shadow: 0 0 10px var(--cinema-glow);
   }
 
   .text-gradient-gold {
-    background: linear-gradient(135deg, oklch(0.88 0.1 80), oklch(0.82 0.12 75), oklch(0.65 0.12 70));
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* ── Smart Contrast System ─────────────────────────────── */
+
+  /* Text readability over images — subtle */
+  .text-on-image {
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.5),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Text readability over images — strong (heroes, banners) */
+  .text-on-image-strong {
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.7),
+      0 4px 16px rgba(0, 0, 0, 0.5),
+      0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Gradient overlay — cinematic top-to-bottom */
+  .overlay-adaptive {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.45) 50%,
+      rgba(0, 0, 0, 0.65)
+    );
+  }
+  :is(.dark) .overlay-adaptive {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.65),
+      rgba(0, 0, 0, 0.35) 50%,
+      rgba(0, 0, 0, 0.55)
+    );
+  }
+
+  /* Gradient overlay — bottom fade (for poster/image cards) */
+  .overlay-bottom {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85),
+      rgba(0, 0, 0, 0.4) 60%,
+      transparent
+    );
+  }
+
+  /* ── Image Brightness (no blur — stays sharp) ────────── */
+
+  /* Light dim — image visible, text readable */
+  .bg-image-dimmed {
+    filter: brightness(0.65) contrast(1.05);
+    image-rendering: auto;
+  }
+  :is(.dark) .bg-image-dimmed {
+    filter: brightness(0.45) contrast(1.1);
+  }
+
+  /* Very light — image stays vibrant */
+  .bg-image-soft {
+    filter: brightness(0.8) saturate(1.15) contrast(1.05);
+  }
+  :is(.dark) .bg-image-soft {
+    filter: brightness(0.55) saturate(1.1) contrast(1.1);
+  }
+
+  /* Crisp rendering for all background images */
+  .bg-crisp {
+    image-rendering: auto;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  /* ── Hover / Focus UX ──────────────────────────────────── */
+  .btn-glow:hover {
+    filter: brightness(1.12);
+    transition: filter 0.2s ease;
+  }
+
+  .btn-glow:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .card-interactive {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+  }
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.15);
+  }
+  :is(.dark) .card-interactive:hover {
+    box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.5);
   }
 
   .cinema-grain {
@@ -261,19 +378,22 @@
   .shimmer-bg {
     background: linear-gradient(
       90deg,
-      oklch(0.16 0.01 260) 0%,
-      oklch(0.2 0.015 260) 50%,
-      oklch(0.16 0.01 260) 100%
+      var(--muted) 0%,
+      var(--accent) 50%,
+      var(--muted) 100%
     );
     background-size: 200% 100%;
   }
 
+  /* ── Background Images (crisp + adaptive brightness) ─── */
+
   .bg-hero {
-    background-image: url('/images/hero-bg.png');
+    background-image: url('/images/custom-hero-bg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    image-rendering: auto;
   }
 
   .bg-auth {
@@ -293,7 +413,7 @@
   }
 
   .bg-movies {
-    background-image: url('/images/movies-bg.png');
+    background-image: url('/images/custom-movies-bg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -301,7 +421,31 @@
   }
 
   .bg-booking {
-    background-image: url('/images/booking-bg.png');
+    background-image: url('/images/custom-booking-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .bg-food {
+    background-image: url('/images/custom-food-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .bg-payment {
+    background-image: url('/images/custom-payment-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .bg-dashboard {
+    background-image: url('/images/custom-dashboard-bg.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -314,5 +458,64 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+  }
+
+  /* ── Gradient Overlays (replace flat bg-background/XX%) ── */
+
+  /* Hero pages: transparent center, soft edges with blur */
+  .overlay-hero {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--background) 50%, transparent) 0%,
+      color-mix(in oklch, var(--background) 12%, transparent) 20%,
+      transparent 40%,
+      transparent 60%,
+      color-mix(in oklch, var(--background) 12%, transparent) 80%,
+      color-mix(in oklch, var(--background) 55%, transparent) 100%
+    );
+    backdrop-filter: blur(0.5px);
+  }
+  :is(.dark) .overlay-hero {
+    backdrop-filter: none;
+  }
+
+  /* Content pages: stronger at top/bottom, lighter center */
+  .overlay-content {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--background) 55%, transparent) 0%,
+      color-mix(in oklch, var(--background) 25%, transparent) 30%,
+      color-mix(in oklch, var(--background) 25%, transparent) 70%,
+      color-mix(in oklch, var(--background) 60%, transparent) 100%
+    );
+    backdrop-filter: blur(0.5px);
+  }
+  :is(.dark) .overlay-content {
+    backdrop-filter: none;
+  }
+
+  /* Scrim overlay: heavier, for pages with lots of text */
+  .overlay-scrim {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--background) 60%, transparent) 0%,
+      color-mix(in oklch, var(--background) 35%, transparent) 40%,
+      color-mix(in oklch, var(--background) 35%, transparent) 60%,
+      color-mix(in oklch, var(--background) 65%, transparent) 100%
+    );
+    backdrop-filter: blur(0.5px);
+  }
+  :is(.dark) .overlay-scrim {
+    backdrop-filter: none;
+  }
+
+  /* Side gradient: for text on left, image on right */
+  .overlay-side {
+    background: linear-gradient(
+      to right,
+      color-mix(in oklch, var(--background) 85%, transparent),
+      color-mix(in oklch, var(--background) 40%, transparent) 60%,
+      transparent
+    );
   }
 }

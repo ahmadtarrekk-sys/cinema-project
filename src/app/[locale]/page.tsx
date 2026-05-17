@@ -62,12 +62,12 @@ export default function HomePage() {
       {/* ── Hero ───────────────────────────────────────────── */}
       <section className="relative flex min-h-[100vh] items-center overflow-hidden bg-hero">
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 overlay-hero" />
         
         {/* Spotlight background */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.82_0.12_75/8%),transparent)]" />
-          <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-background to-transparent" />
+          <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-background/70 to-transparent backdrop-blur-sm" />
           <div className="animate-spotlight absolute -top-1/2 left-1/2 h-[200%] w-[60%] -translate-x-1/2 bg-[conic-gradient(from_90deg,transparent,oklch(0.82_0.12_75/3%),transparent_50%)]" />
         </div>
 
@@ -99,7 +99,7 @@ export default function HomePage() {
 
             {/* Heading */}
             <motion.div variants={fadeUp}>
-              <h1 className="max-w-4xl font-display text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl whitespace-pre-line">
+              <h1 className="max-w-4xl font-display text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl whitespace-pre-line text-on-image-strong">
                 {t.rich("title", {
                   brand: (chunks) => <span className="text-gradient-gold">{chunks}</span>
                 })}
@@ -109,7 +109,7 @@ export default function HomePage() {
             {/* Subtitle */}
             <motion.p
               variants={fadeUp}
-              className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+              className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg text-on-image"
             >
               {t("subtitle")}
             </motion.p>
@@ -122,7 +122,7 @@ export default function HomePage() {
               <Link href="/movies">
                 <Button
                   size="lg"
-                  className="group gap-2 bg-gold px-8 text-black hover:bg-gold-light font-semibold"
+                  className="group gap-2 bg-gold px-8 text-black hover:bg-gold-light font-semibold btn-glow"
                 >
                   <Play className="h-4 w-4 rtl:rotate-180" />
                   {t("cta.browse")}
@@ -133,7 +133,7 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="gap-2 border-white/10 px-8 hover:bg-white/5"
+                  className="gap-2 border-border px-8 hover:bg-accent"
                 >
                   <MapPin className="h-4 w-4" />
                   {t("cta.find")}
@@ -166,8 +166,8 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ──────────────────────────────────────── */}
-      <section className="relative border-t border-white/5 py-24 bg-chat bg-blend-overlay bg-background/80">
-        <div className="absolute inset-0 bg-background/50" />
+      <section className="relative border-t border-border py-24 bg-chat bg-blend-overlay bg-background/80">
+        <div className="absolute inset-0 overlay-content" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -197,7 +197,7 @@ export default function HomePage() {
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <div className="group relative rounded-xl border border-white/5 bg-cinema-surface p-6 transition-all duration-300 hover:border-gold/20 hover:bg-cinema-surface-hover hover:glow-gold-sm lg:h-full">
+                <div className="group relative rounded-xl border border-border bg-cinema-surface p-6 transition-all duration-300 hover:border-gold/20 hover:bg-cinema-surface-hover hover:glow-gold-sm lg:h-full card-interactive">
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 transition-colors group-hover:bg-gold/15">
                     <feature.icon className="h-5 w-5 text-gold" />
                   </div>
@@ -215,8 +215,8 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA Banner ────────────────────────────────────── */}
-      <section className="relative border-t border-white/5 py-24 bg-auth bg-blend-overlay bg-background/80">
-        <div className="absolute inset-0 bg-background/60" />
+      <section className="relative border-t border-border py-24 bg-auth bg-blend-overlay bg-background/80">
+        <div className="absolute inset-0 overlay-scrim" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,oklch(0.82_0.12_75/5%),transparent)]" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -236,7 +236,7 @@ export default function HomePage() {
             <Link href="/register">
               <Button
                 size="lg"
-                className="gap-2 bg-gold px-8 text-black hover:bg-gold-light font-semibold"
+                className="gap-2 bg-gold px-8 text-black hover:bg-gold-light font-semibold btn-glow"
               >
                 <Sparkles className="h-4 w-4" />
                 {t("cta.join")}

@@ -1,22 +1,22 @@
 import { QrScanner } from "@/components/scanner/qr-scanner";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
+import { redirect } from "@/i18n/routing";
+import { getLocale } from "next-intl/server";
+import { QrCode } from "lucide-react";
 
 export default async function ScannerPage() {
   const session = await auth();
-  
+  const locale = await getLocale();
+
   if (!session?.user) {
-    redirect("/login");
+    return redirect({ href: "/login", locale });
   }
 
   // Only Admin and Staff can use the scanner
   if (session.user.role !== "ADMIN" && session.user.role !== "STAFF") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center">
-          <ShieldAlert className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center space-y-4">
           <p className="text-muted-foreground">You do not have permission to access the scanner.</p>
         </div>
       </div>
@@ -24,19 +24,21 @@ export default async function ScannerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-profile bg-blend-overlay bg-background/80 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute inset-0 bg-background/60 pointer-events-none" />
-      <div className="relative z-10 max-w-4xl mx-auto text-center mb-10">
-        <h1 className="font-display text-4xl sm:text-5xl font-bold text-white drop-shadow-lg mb-4">
-          Ticket Validation
-        </h1>
-        <p className="text-lg text-white/70">
-          Staff Portal to verify Aurora Cinema bookings
-        </p>
-      </div>
-      
-      <div className="relative z-10">
-        <QrScanner />
+    <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center space-y-2">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-gold/10 text-gold">
+            <QrCode className="h-7 w-7" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Ticket Scanner</h1>
+          <p className="text-sm text-muted-foreground">
+            Scan a customer's QR code or enter a booking ID to validate their ticket.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
+          <QrScanner />
+        </div>
       </div>
     </div>
   );

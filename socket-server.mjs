@@ -24,7 +24,7 @@ const io = new Server(server, {
 });
 
 const HOLD_DURATION_SEC = 180; // 3 minutes
-const MAX_SEATS_PER_USER = 4;
+const MAX_SEATS_PER_USER = 5;
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -125,18 +125,23 @@ setInterval(async () => {
     });
 
     if (expiredHolds.length > 0) {
-      // Broadcast release
-      expiredHolds.forEach(hold => {
-        io.to(hold.showtimeId).emit("seatReleased", { seatId: hold.seatId, userId: hold.userId });
+      console.log(`[CLEANUP] Found ${expiredHolds.length} expired holds at ${new Date().toISOString()}`);
+      
+      // Delete from DB first using direct expiration criteria for robustness
+      const deleteResult = await prisma.seatHold.deleteMany({
+        where: { expiresAt: { lte: new Date() } }
       });
+      
+      console.log(`[CLEANUP] Successfully deleted ${deleteResult.count} holds from database.`);
 
-      // Delete from DB
-      await prisma.seatHold.deleteMany({
-        where: { id: { in: expiredHolds.map(h => h.id) } }
+      // Broadcast release to all users in the specific showtime rooms
+      expiredHolds.forEach(hold => {
+        console.log(`[CLEANUP] Emitting seatReleased for seat ${hold.seatId} (User: ${hold.userId}) in Room: ${hold.showtimeId}`);
+        io.to(hold.showtimeId).emit("seatReleased", { seatId: hold.seatId, userId: hold.userId });
       });
     }
   } catch (err) {
-    console.error("Cleanup error:", err);
+    console.error(`[CLEANUP ERROR] Failed to perform periodic cleanup:`, err);
   }
 }, 5000); // Check every 5s
 

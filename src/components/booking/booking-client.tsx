@@ -3,9 +3,17 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { format as formatDt } from "date-fns";
-import { Calendar, Clock, MapPin, Armchair, Loader2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Armchair, Loader2, AlertTriangle, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { createBookingDraft } from "@/lib/actions/bookings";
+import { createBooking } from "@/lib/actions/bookings";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/routing";
 import { getSocket, initSocket } from "@/lib/socket";
@@ -30,6 +38,16 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
   const [heldSeatIds, setHeldSeatIds] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  // Sync local state if server prop updates (e.g. after router.refresh())
+  useEffect(() => {
+    setBookedSeatIdsLocal(bookedSeatIds);
+    // If any selected seats are now confirmed booked, clear them from selection
+    setSelectedSeatIds((prev) => prev.filter(id => !bookedSeatIds.includes(id)));
+  }, [bookedSeatIds]);
+
+  const MAX_SEATS = 5;
 
   const { movie, hall } = showtime;
   const cinema = hall.cinema;
@@ -53,7 +71,17 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
         const socket = initSocket(token);
         currentSocket = socket;
 
-        socket.emit("joinShowtime", showtime.id);
+        const handleConnect = () => {
+          socket.emit("joinShowtime", showtime.id);
+        };
+
+        // Attach listener for initial connect and auto-reconnects
+        socket.on("connect", handleConnect);
+
+        // If it's already connected (since autoConnect: true), fire immediately
+        if (socket.connected) {
+          handleConnect();
+        }
 
         socket.on("initialHolds", (holds: { seatId: string; userId: string }[]) => {
           // Exclude seats held by current user from the 'held by others' list
@@ -61,11 +89,21 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
             .filter((h) => h.userId !== userId)
             .map((h) => h.seatId);
           setHeldSeatIds(othersHolds);
+
+          // Restore current user's previously held seats locally (e.g. if they hit "back" from payment)
+          // BUT exclude any seats that are already confirmed/booked
+          const myHolds = holds
+            .filter((h) => h.userId === userId)
+            .map((h) => h.seatId)
+            .filter((seatId) => !bookedSeatIds.includes(seatId));
+          if (myHolds.length > 0) {
+            setSelectedSeatIds((prev) => Array.from(new Set([...prev, ...myHolds])));
+          }
         });
 
         socket.on("seatHeld", ({ seatId, userId: holderId }: { seatId: string; userId: string }) => {
           if (holderId !== userId) {
-            setHeldSeatIds((prev) => [...prev, seatId]);
+            setHeldSeatIds((prev) => prev.includes(seatId) ? prev : [...prev, seatId]);
           }
         });
 
@@ -98,6 +136,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
 
     return () => {
       if (currentSocket) {
+        currentSocket.off("connect");
         currentSocket.off("initialHolds");
         currentSocket.off("seatHeld");
         currentSocket.off("seatReleased");
@@ -126,10 +165,11 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
       socket.emit("releaseSeat", { showtimeId: showtime.id, seatId });
     } else {
       // Client-side hard limit check before sending to server
-      if (selectedSeatIds.length >= 4) {
-        toast.error("You can only reserve up to 4 seats.");
+      if (selectedSeatIds.length >= MAX_SEATS) {
+        setShowLimitModal(true);
         return;
       }
+
       setSelectedSeatIds((prev) => [...prev, seatId]);
       socket.emit("holdSeat", { showtimeId: showtime.id, seatId });
     }
@@ -171,18 +211,19 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
   const subtotal = calculateTotal();
   const total = subtotal + fees;
 
+
   const handleBooking = async () => {
     setIsBooking(true);
     try {
-      const res = await createBookingDraft({
+      const res = await createBooking({
         showtimeId: showtime.id,
         seatIds: selectedSeatIds,
         totalAmount: total,
       });
 
       if (res.success) {
-        toast.success("Seats reserved! Redirecting to summary...");
-        router.push(`/book/${showtime.id}/summary/${res.bookingId}`);
+        toast.success("Seats reserved! Redirecting to concessions...");
+        router.push(`/book/${showtime.id}/summary/${res.bookingId}/concessions`);
       } else {
         toast.error(res.error || "Failed to reserve seats.");
         setIsBooking(false);
@@ -195,13 +236,13 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
 
   return (
     <div className="relative min-h-screen bg-booking bg-blend-overlay bg-background/80">
-      <div className="absolute inset-0 bg-background/50 pointer-events-none" />
+      <div className="absolute inset-0 overlay-content pointer-events-none" />
       <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Column: Flow */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-cinema-surface/50 p-6 backdrop-blur-xl">
-            <h2 className="text-2xl font-display font-medium text-white mb-6">Select Seats</h2>
+          <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
+            <h2 className="text-2xl font-display font-medium text-foreground mb-6">Select Seats</h2>
             
             {/* Legend */}
             <div className="flex justify-center gap-6 mb-8 flex-wrap text-sm text-muted-foreground">
@@ -217,15 +258,20 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
                 <div className="w-6 h-6 rounded-t-lg rounded-b-sm border border-fuchsia-500/60 bg-fuchsia-500/30 shadow-[0_0_10px_rgba(217,70,239,0.2)]"></div>
                 <span>VIP</span>
               </div>
-              <div className="flex items-center gap-2 ml-4 border-l border-white/10 pl-4">
+              <div className="flex items-center gap-2 ml-4 border-l border-border pl-4">
                 <div className="w-6 h-6 rounded-t-lg rounded-b-sm bg-gold border border-gold shadow-[0_0_10px_rgba(234,179,8,0.5)]"></div>
                 <span>Selected</span>
               </div>
-              <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+              <div className="flex items-center gap-2 border-l border-border pl-4">
+                <div className="w-6 h-6 rounded-t-lg rounded-b-sm bg-green-500/30 border border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.3)]"></div>
+                <span>Held</span>
+              </div>
+              <div className="flex items-center gap-2 border-l border-border pl-4">
                 <div className="w-6 h-6 rounded-t-lg rounded-b-sm bg-red-500/20 border border-red-500/30"></div>
-                <span>Taken</span>
+                <span>Booked</span>
               </div>
             </div>
+
 
             {/* Screen */}
             <div className="mb-12 relative flex justify-center">
@@ -245,7 +291,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
                         const tier = getSeatTier(seat);
                         const status = getSeatStatus(seat.id);
                         
-                        let baseStyle = "bg-white/20 border-white/40 text-white/90 hover:border-white/80 hover:bg-white/30 hover:text-white";
+                        let baseStyle = "bg-foreground/20 border-foreground/40 text-foreground/90 hover:border-foreground/80 hover:bg-foreground/30 hover:text-foreground";
                         if (tier === "Premium") {
                           baseStyle = "bg-blue-500/30 border-blue-500/60 text-blue-100 hover:border-blue-400 hover:bg-blue-500/50 hover:text-white";
                         } else if (tier === "VIP") {
@@ -262,7 +308,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
                                 status === "booked"
                                   ? "bg-red-500/20 border-red-500/30 cursor-not-allowed opacity-60 text-red-500/40"
                                   : status === "held"
-                                  ? "bg-orange-500/20 border-transparent cursor-not-allowed outline-dashed outline-1 outline-orange-500/30 text-orange-500/40 opacity-70"
+                                  ? "bg-green-500/30 border-green-500/50 cursor-not-allowed text-green-400/70 shadow-[0_0_10px_rgba(34,197,94,0.2)]"
                                   : status === "selected"
                                   ? "bg-gold border-gold text-black shadow-[0_0_15px_rgba(234,179,8,0.6)] scale-110 z-10"
                                   : baseStyle
@@ -287,11 +333,11 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
 
         {/* Right Column: Sticky Booking Summary */}
         <div className="lg:col-span-1">
-          <div className="sticky top-24 rounded-2xl border border-white/10 bg-cinema-surface/50 p-6 backdrop-blur-xl">
-            <h3 className="text-lg font-bold text-white mb-4">Booking Summary</h3>
+          <div className="sticky top-24 rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
+            <h3 className="text-lg font-bold text-foreground mb-4">Booking Summary</h3>
             
             <div className="flex gap-4 mb-6">
-              <div className="relative h-24 w-16 flex-shrink-0 overflow-hidden rounded-md border border-white/10 bg-black">
+              <div className="relative h-24 w-16 flex-shrink-0 overflow-hidden rounded-md border border-border bg-muted">
                 <Image
                   src={movie.posterUrl}
                   alt={isArabic ? movie.titleAr : movie.titleEn}
@@ -300,7 +346,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
                 />
               </div>
               <div>
-                <h4 className="font-semibold text-white">
+                <h4 className="font-semibold text-foreground">
                   {isArabic ? movie.titleAr : movie.titleEn}
                 </h4>
                 <div className="mt-2 space-y-1 text-xs text-muted-foreground">
@@ -320,7 +366,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
               </div>
             </div>
 
-            <div className="space-y-3 border-t border-white/10 pt-4 text-sm">
+            <div className="space-y-3 border-t border-border pt-4 text-sm">
               {selectedSeatIds.length > 0 ? (
                 <div className="mb-2 space-y-1">
                   {/* Group selected seats by tier to show breakdown */}
@@ -349,7 +395,7 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
                   <span>EGP {fees.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-white/5 pt-3 font-semibold text-white text-lg">
+              <div className="flex justify-between border-t border-border pt-3 font-semibold text-foreground text-lg">
                 <span>Total</span>
                 <span className="text-gold">EGP {total.toFixed(2)}</span>
               </div>
@@ -361,12 +407,50 @@ export function BookingClient({ showtime, bookedSeatIds, isArabic }: BookingClie
               onClick={handleBooking}
             >
               {isBooking ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-              {isBooking ? "Reserving..." : "Review & Book Tickets"}
+              {isBooking ? "Processing..." : "Proceed to Concessions"}
             </Button>
           </div>
           </div>
         </div>
       </div>
+
+      {/* Seat Limit Modal */}
+      <Dialog open={showLimitModal} onOpenChange={setShowLimitModal}>
+        <DialogContent className="sm:max-w-md bg-cinema-surface border-border">
+          <DialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-gold/10">
+              <AlertTriangle className="h-6 w-6 text-gold" />
+            </div>
+            <DialogTitle className="text-center text-lg">
+              Seat Limit Reached
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              You can select up to <strong className="text-foreground">{MAX_SEATS} seats</strong> per booking.
+              To select more seats, please complete your current booking first.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-col">
+            <Button
+              className="w-full bg-gold text-black hover:bg-gold-light font-semibold gap-2"
+              onClick={() => {
+                setShowLimitModal(false);
+                handleBooking();
+              }}
+              disabled={selectedSeatIds.length === 0 || isBooking}
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Continue to Food & Payment
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-border"
+              onClick={() => setShowLimitModal(false)}
+            >
+              Go Back to Seats
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
