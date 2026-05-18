@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit2, Loader2 } from "lucide-react";
+import { Plus, Edit2, Loader2, X, Ban, Save } from "lucide-react";
 import { toast } from "sonner";
 import { createOrUpdateMovie } from "@/lib/actions/admin";
 import { Input } from "@/components/ui/input";
@@ -72,7 +72,7 @@ export function MovieDialog({ movie }: { movie?: any }) {
           <div className="bg-cinema-surface border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-border flex justify-between items-center bg-background/80 sticky top-0 z-10">
               <h2 className="text-xl font-bold text-foreground">{isEditing ? "Edit Movie" : "Add Movie"}</h2>
-              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>Close</Button>
+              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="gap-1.5 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /> Close</Button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -137,11 +137,11 @@ export function MovieDialog({ movie }: { movie?: any }) {
               </div>
 
               <div className="pt-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-cinema-surface py-4">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border">
-                  Cancel
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border gap-1.5">
+                  <Ban className="h-4 w-4" /> Cancel
                 </Button>
-                <Button type="submit" disabled={isPending} className="bg-gold text-black hover:bg-gold-light">
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="submit" disabled={isPending} className="bg-gold text-black hover:bg-gold-light gap-1.5">
+                  {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : isEditing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   {isEditing ? "Save Changes" : "Create Movie"}
                 </Button>
               </div>

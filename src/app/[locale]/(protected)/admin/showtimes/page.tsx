@@ -57,7 +57,14 @@ export default async function AdminShowtimesPage() {
                   <td className="px-6 py-4 text-white/80">{st._count.tickets}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                       <ShowtimeDialog movies={movies} cinemas={cinemas} showtime={st} />
+                       <ShowtimeDialog movies={movies} cinemas={cinemas} showtime={{
+                         id: st.id,
+                         movieId: st.movieId,
+                         hallId: st.hallId,
+                         startTime: st.startTime.toISOString(),
+                         basePrice: st.basePrice,
+                         hall: { cinemaId: st.hall.cinema.id },
+                       }} />
                        <DeleteShowtimeButton id={st.id} />
                     </div>
                   </td>
