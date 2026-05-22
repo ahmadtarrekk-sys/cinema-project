@@ -1,3 +1,5 @@
+
+
 # Lumière Cinema — Premium Booking Platform
 
 A full-featured cinema booking web application built with **Next.js 16**, **TypeScript**, **Prisma + PostgreSQL**, **Auth.js**, **Tailwind CSS + shadcn/ui**, **Framer Motion**, and **Socket.IO**.
